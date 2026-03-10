@@ -1,0 +1,52 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Trà sữa Camellia",
+      "price": 35000,
+      "image": "trasua1.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Trà sữa Oolong",
+      "price": 32000,
+      "image": "trasua2.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Trà sữa Matcha",
+      "price": 36000,
+      "image": "trasua3.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Trà sữa Chocolate",
+      "price": 37000,
+      "image": "trasua4.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Trà sữa Kem Cheese",
+      "price": 39000,
+      "image": "trasua5.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Trà sữa Đường Đen",
+      "price": 40000,
+      "image": "trasua6.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Trà sữa Matcha Latte",
+      "price": 38000,
+      "image": "trasua7.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Trà sữa Sữa Tươi",
+      "price": 34000,
+      "image": "trasua8.jpg"
+    }
+  ]
+}
