@@ -62,6 +62,7 @@
             type="button"
             class="add-cart-btn"
             :disabled="!selectedSize"
+            @click="handleAddToCart"
           >
             Xác nhận thêm vào giỏ hàng
           </button>
@@ -85,7 +86,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'add-to-cart'])
 
 const selectedSize = ref('')
 const quantity = ref(1)
@@ -146,6 +147,22 @@ watch(
     }
   }
 )
+
+const handleAddToCart = () => {
+  if (!selectedSizeItem.value) return
+
+  emit('add-to-cart', {
+    productId: props.product.id,
+    name: props.product.name,
+    image: props.product.image,
+    price: props.product.price,
+    size: selectedSizeItem.value.size,
+    quantity: quantity.value,
+    stock: selectedSizeItem.value.quantity
+  })
+
+  handleClose()
+}
 </script>
 
 <style scoped>

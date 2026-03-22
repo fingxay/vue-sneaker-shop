@@ -3,7 +3,7 @@
     <div class="container">
       <h1 class="cart-title">Giỏ hàng</h1>
 
-      <div class="cart-layout">
+      <div v-if="cartItems.length > 0" class="cart-layout">
         <div class="cart-left">
           <div class="cart-box">
             <div class="cart-header">
@@ -14,10 +14,14 @@
               <div class="header-cell">Thao tác</div>
             </div>
 
-            <div class="cart-item">
+            <div
+              v-for="(cartItem, index) in cartItems"
+              :key="`${cartItem.productId}-${cartItem.size}-${index}`"
+              class="cart-item"
+            >
               <div class="cart-product">
                 <img
-                  :src="productImage"
+                  :src="require(`@/assets/sneakers/${cartItem.image}`)"
                   :alt="cartItem.name"
                   class="cart-product-image"
                 />
@@ -30,27 +34,51 @@
 
               <div class="cart-cell cart-price">
                 <span class="mobile-label">Đơn giá:</span>
-                <span>{{ formatPrice(cartItem.price) }}</span>
+                <span>{{ formatPrice(cartItem.price || 0) }}</span>
               </div>
 
               <div class="cart-cell cart-quantity">
                 <span class="mobile-label">Số lượng:</span>
 
                 <div class="qty-controls">
-                  <button type="button" class="qty-btn">-</button>
-                  <span class="qty-value">{{ cartItem.quantity }}</span>
-                  <button type="button" class="qty-btn">+</button>
+                  <button
+                    type="button"
+                    class="qty-btn"
+                    :disabled="(cartItem.quantity || 0) <= 1"
+                    @click="decreaseQuantity(index)"
+                  >
+                    -
+                  </button>
+
+                  <span class="qty-value">{{ cartItem.quantity || 0 }}</span>
+
+                  <button
+                    type="button"
+                    class="qty-btn"
+                    :disabled="(cartItem.quantity || 0) >= (cartItem.stock || 0)"
+                    @click="increaseQuantity(index)"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
               <div class="cart-cell cart-total">
                 <span class="mobile-label">Thành tiền:</span>
-                <span>{{ formatPrice(cartItem.price * cartItem.quantity) }}</span>
+                <span>
+                  {{ formatPrice((cartItem.price || 0) * (cartItem.quantity || 0)) }}
+                </span>
               </div>
 
               <div class="cart-cell cart-action">
                 <span class="mobile-label">Thao tác:</span>
-                <button type="button" class="remove-btn">Xóa</button>
+                <button
+                  type="button"
+                  class="remove-btn"
+                  @click="removeCartItem(index)"
+                >
+                  Xóa
+                </button>
               </div>
             </div>
           </div>
@@ -62,7 +90,7 @@
 
             <div class="summary-row">
               <span>Tạm tính</span>
-              <span>{{ formatPrice(cartItem.price * cartItem.quantity) }}</span>
+              <span>{{ formatPrice(totalAmount) }}</span>
             </div>
 
             <div class="summary-row">
@@ -72,7 +100,7 @@
 
             <div class="summary-row total">
               <span>Tổng cộng</span>
-              <span>{{ formatPrice(cartItem.price * cartItem.quantity) }}</span>
+              <span>{{ formatPrice(totalAmount) }}</span>
             </div>
 
             <button type="button" class="checkout-btn">
@@ -81,24 +109,53 @@
           </div>
         </div>
       </div>
+
+      <div v-else class="empty-cart">
+        Giỏ hàng của bạn đang trống
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const cartItem = {
-  name: 'Nike Air Force 1 Full Trắng REP 1:1',
-  size: 40,
-  price: 890000,
-  quantity: 1
-}
+import { ref, computed } from 'vue'
 
-const productImage = require('@/assets/sneakers/sneaker2.jpg')
+const cartItems = ref(JSON.parse(localStorage.getItem('cart')) || [])
+
+const totalAmount = computed(() => {
+  return cartItems.value.reduce((total, item) => {
+    return total + (item.price || 0) * (item.quantity || 0)
+  }, 0)
+})
 
 const formatPrice = (price) => {
   return price.toLocaleString('vi-VN') + 'đ'
 }
 
+const removeCartItem = (index) => {
+  cartItems.value.splice(index, 1)
+  localStorage.setItem('cart', JSON.stringify(cartItems.value))
+}
+
+const increaseQuantity = (index) => {
+  const item = cartItems.value[index]
+  if (!item) return
+
+  if (item.quantity < item.stock) {
+    item.quantity++
+    localStorage.setItem('cart', JSON.stringify(cartItems.value))
+  }
+}
+
+const decreaseQuantity = (index) => {
+  const item = cartItems.value[index]
+  if (!item) return
+
+  if (item.quantity > 1) {
+    item.quantity--
+    localStorage.setItem('cart', JSON.stringify(cartItems.value))
+  }
+}
 </script>
 
 <style scoped>
@@ -126,6 +183,11 @@ const formatPrice = (price) => {
   border-radius: 18px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+}
+
+.cart-right {
+  position: sticky;
+  top: 110px;
 }
 
 .cart-header,
@@ -288,6 +350,10 @@ const formatPrice = (price) => {
 @media (max-width: 1469px) {
   .cart-layout {
     grid-template-columns: 1fr;
+  }
+
+  .cart-right {
+    position: static;
   }
 
   .cart-header,

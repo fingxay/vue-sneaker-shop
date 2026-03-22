@@ -11,6 +11,7 @@
         v-for="product in paginatedProducts"
         :key="product.id"
         :product="product"
+        @add-to-cart="handleAddToCart"
       />
     </div>
 
@@ -136,6 +137,28 @@ watch(
 onMounted(() => {
   fetchProducts()
 })
+
+const handleAddToCart = (cartItem) => {
+  const currentCart = JSON.parse(localStorage.getItem('cart')) || []
+
+  const existingItem = currentCart.find(
+    (item) =>
+      item.productId === cartItem.productId &&
+      item.size === cartItem.size
+  )
+
+  if (existingItem) {
+    const maxQuantity = cartItem.stock
+    existingItem.quantity = Math.min(
+      existingItem.quantity + cartItem.quantity,
+      maxQuantity
+    )
+  } else {
+    currentCart.push(cartItem)
+  }
+
+  localStorage.setItem('cart', JSON.stringify(currentCart))
+}
 </script>
 
 <style scoped>
