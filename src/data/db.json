@@ -3,6 +3,7 @@
     {
       "id": 1,
       "name": "Giày Nike SB Force 58 Xám Đen REP 1:1",
+      "brand": "Nike",
       "price": 640000,
       "image": "sneaker1.jpg",
       "sizes": [
@@ -19,6 +20,7 @@
     {
       "id": 2,
       "name": "Nike Air Force 1 Full Trắng REP 1:1",
+      "brand": "Nike",
       "price": 890000,
       "image": "sneaker2.jpg",
       "sizes": [
@@ -35,6 +37,7 @@
     {
       "id": 3,
       "name": "MLB Chunky Liner NY Embo Monogram Trắng REP 1:1",
+      "brand": "MLB",
       "price": 720000,
       "image": "sneaker3.jpg",
       "sizes": [
@@ -51,6 +54,7 @@
     {
       "id": 4,
       "name": "Adidas Superstar Trắng Kẻ Đen Mũi Sò REP 1:1",
+      "brand": "Adidas",
       "price": 530000,
       "image": "sneaker4.jpg",
       "sizes": [
@@ -67,6 +71,7 @@
     {
       "id": 5,
       "name": "Nike Jordan 1 Low Trắng Đen Gót Oliu REP 1:1",
+      "brand": "Nike",
       "price": 610000,
       "image": "sneaker5.jpg",
       "sizes": [
@@ -83,6 +88,7 @@
     {
       "id": 6,
       "name": "Vans Vault Old Skool Đen Trắng REP 1:1",
+      "brand": "Vans",
       "price": 450000,
       "image": "sneaker6.jpg",
       "sizes": [
@@ -99,6 +105,7 @@
     {
       "id": 7,
       "name": "New Balance 530 Xám Trắng REP 1:1",
+      "brand": "New Balance",
       "price": 680000,
       "image": "sneaker7.jpg",
       "sizes": [
@@ -115,6 +122,7 @@
     {
       "id": 8,
       "name": "Nike Jordan 1 Low Year Of Dragon Trắng Mận REP 1:1",
+      "brand": "Nike",
       "price": 770000,
       "image": "sneaker8.jpg",
       "sizes": [
@@ -131,6 +139,7 @@
     {
       "id": 9,
       "name": "Adidas Alphabounce Beyond Kem Tím REP 1:1",
+      "brand": "Adidas",
       "price": 590000,
       "image": "sneaker9.jpg",
       "sizes": [
@@ -147,6 +156,7 @@
     {
       "id": 10,
       "name": "New Balance 530 Kem REP 1:1",
+      "brand": "New Balance",
       "price": 740000,
       "image": "sneaker10.jpg",
       "sizes": [
@@ -163,6 +173,7 @@
     {
       "id": 11,
       "name": "MLB Chunky Liner NY Saffiano Trắng Xám REP 1:1",
+      "brand": "MLB",
       "price": 690000,
       "image": "sneaker11.jpg",
       "sizes": [
@@ -179,6 +190,7 @@
     {
       "id": 12,
       "name": "Adidas Samba OG Trắng Kẻ Đen Mũi Da Lộn REP 1:1",
+      "brand": "Adidas",
       "price": 560000,
       "image": "sneaker12.jpg",
       "sizes": [
@@ -195,6 +207,7 @@
     {
       "id": 13,
       "name": "MLB Chunky Liner NY Embo Monogram Kem Đế Nâu REP 1:1",
+      "brand": "MLB",
       "price": 710000,
       "image": "sneaker13.jpg",
       "sizes": [
@@ -211,6 +224,7 @@
     {
       "id": 14,
       "name": "MLB Chunky Liner NY Saffiano Trắng Navy REP 1:1",
+      "brand": "MLB",
       "price": 670000,
       "image": "sneaker14.jpg",
       "sizes": [
@@ -227,6 +241,7 @@
     {
       "id": 15,
       "name": "Nike Jordan 1 Low Xanh Dương Xám REP 1:1",
+      "brand": "Nike",
       "price": 620000,
       "image": "sneaker15.jpg",
       "sizes": [
@@ -243,6 +258,7 @@
     {
       "id": 16,
       "name": "Giày Puma Court Classic Vulc FS Kem Gót Mận REP 1:1",
+      "brand": "Puma",
       "price": 480000,
       "image": "sneaker16.jpg",
       "sizes": [
@@ -259,6 +275,7 @@
     {
       "id": 17,
       "name": "Nike Air Jordan 1 Low Đính Đá Trắng Đen Xám REP 1:1",
+      "brand": "Nike",
       "price": 830000,
       "image": "sneaker17.jpg",
       "sizes": [
@@ -275,6 +292,7 @@
     {
       "id": 18,
       "name": "Nike Air Force 1 Year Of The Horse Trắng Kem REP 1:1",
+      "brand": "Nike",
       "price": 910000,
       "image": "sneaker18.jpg",
       "sizes": [
@@ -291,6 +309,7 @@
     {
       "id": 19,
       "name": "Adidas Alphabounce Beyond Full Trắng REP 1:1",
+      "brand": "Adidas",
       "price": 600000,
       "image": "sneaker19.jpg",
       "sizes": [
@@ -307,6 +326,7 @@
     {
       "id": 20,
       "name": "Giày Adidas Forum 84 Trắng Đen REP 1:1",
+      "brand": "Adidas",
       "price": 650000,
       "image": "sneaker20.jpg",
       "sizes": [
@@ -323,6 +343,7 @@
     {
       "id": 21,
       "name": "Nike Air Jordan 1 Low Paris REP 1:1",
+      "brand": "Nike",
       "price": 860000,
       "image": "sneaker21.jpg",
       "sizes": [
@@ -339,6 +360,7 @@
     {
       "id": 22,
       "name": "MLB Chunky Liner NY Saffiano Trắng Tím REP 1:1",
+      "brand": "MLB",
       "price": 700000,
       "image": "sneaker22.jpg",
       "sizes": [
@@ -355,6 +377,7 @@
     {
       "id": 23,
       "name": "Adidas Samba OG Kem Xám Mũi Da Lộn REP 1:1",
+      "brand": "Adidas",
       "price": 540000,
       "image": "sneaker23.jpg",
       "sizes": [
@@ -371,6 +394,7 @@
     {
       "id": 24,
       "name": "Nike Jordan 1 Low Đen Xám PQ Mũi Da Lộn REP 1:1",
+      "brand": "Nike",
       "price": 760000,
       "image": "sneaker24.jpg",
       "sizes": [
@@ -387,6 +411,7 @@
     {
       "id": 25,
       "name": "Giày Adidas Forum 84 Trắng Kem REP 1:1",
+      "brand": "Adidas",
       "price": 580000,
       "image": "sneaker25.jpg",
       "sizes": [
@@ -403,6 +428,7 @@
     {
       "id": 26,
       "name": "Nike Air Force 1 07 LV Kem Xám Đỏ REP 1:1",
+      "brand": "Nike",
       "price": 950000,
       "image": "sneaker26.jpg",
       "sizes": [
@@ -419,6 +445,7 @@
     {
       "id": 27,
       "name": "Giày Nike SB Force 58 Xám Đỏ REP 1:1",
+      "brand": "Nike",
       "price": 630000,
       "image": "sneaker27.jpg",
       "sizes": [
