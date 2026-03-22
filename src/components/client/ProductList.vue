@@ -3,17 +3,17 @@
     <h2 class="title">Danh sách sản phẩm</h2>
 
     <div class="product-grid">
-      <div class="product-card" v-for="product in paginatedProducts" :key="product.id">
-        <img :src="getImage(product.image)" :alt="product.name" class="product-image" />
-
-        <h3 class="product-name">{{ product.name }}</h3>
-        <p class="product-price">{{ formatPrice(product.price) }}</p>
-      </div>
+      <ProductCard
+        v-for="product in paginatedProducts"
+        :key="product.id"
+        :product="product"
+      />
     </div>
   </div>
 
   <div class="pagination" v-if="totalPages > 1">
     <button
+      type="button"
       class="page-btn"
       :disabled="currentPage === 1"
       @click="currentPage--"
@@ -24,6 +24,7 @@
     <button
       v-for="page in totalPages"
       :key="page"
+      type="button"
       class="page-btn"
       :class="{ active: currentPage === page }"
       @click="currentPage = page"
@@ -32,6 +33,7 @@
     </button>
 
     <button
+      type="button"
       class="page-btn"
       :disabled="currentPage === totalPages"
       @click="currentPage++"
@@ -42,9 +44,9 @@
 </template>
 
 <script setup>
-
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import ProductCard from './ProductCard.vue'
 
 const products = ref([])
 const currentPage = ref(1)
@@ -63,14 +65,6 @@ const totalPages = computed(() => {
 const fetchProducts = async () => {
   const res = await axios.get('http://localhost:3000/products')
   products.value = res.data
-}
-
-const getImage = (imageName) => {
-  return require(`@/assets/sneakers/${imageName}`)
-}
-
-const formatPrice = (price) => {
-  return new Intl.NumberFormat('vi-VN').format(price) + ' đ'
 }
 
 onMounted(() => {
@@ -92,40 +86,6 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-}
-
-.product-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 15px;
-  background: #fff;
-  transition: 0.3s;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.product-image {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.product-name {
-  font-size: 18px;
-  margin-bottom: 10px;
-  line-height: 1.4;
-  min-height: calc(1.4em * 3);
-}
-
-.product-price {
-  color: red;
-  font-weight: bold;
-  font-size: 18px;
 }
 
 .pagination {

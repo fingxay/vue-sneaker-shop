@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-layout">
     <HeaderClient />
     <router-view />
     <FooterClient />
@@ -18,8 +18,20 @@ import FooterClient from './components/client/FooterClient.vue'
   box-sizing: border-box;
 }
 
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {

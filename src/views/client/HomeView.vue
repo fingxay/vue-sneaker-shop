@@ -9,3 +9,9 @@
 import BannerSlider from '@/components/client/BannerSlider.vue'
 import ProductList from '@/components/client/ProductList.vue'
 </script>
+
+<style scoped>
+  .container {
+    padding-top: 80px;
+  }
+</style>
