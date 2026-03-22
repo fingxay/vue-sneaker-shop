@@ -44,28 +44,48 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 import ProductCard from './ProductCard.vue'
+
+const route = useRoute()
 
 const products = ref([])
 const currentPage = ref(1)
 const itemsPerPage = 12
 
+const filteredProducts = computed(() => {
+  const selectedBrand = route.query.brand
+
+  if (!selectedBrand) {
+    return products.value
+  }
+
+  return products.value.filter((product) => product.brand === selectedBrand)
+})
+
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
-  return products.value.slice(start, end)
+  return filteredProducts.value.slice(start, end)
 })
 
 const totalPages = computed(() => {
-  return Math.ceil(products.value.length / itemsPerPage)
+  return Math.ceil(filteredProducts.value.length / itemsPerPage)
 })
 
 const fetchProducts = async () => {
   const res = await axios.get('http://localhost:3000/products')
   products.value = res.data
 }
+
+watch(
+  () => route.query.brand,
+  () => {
+    currentPage.value = 1
+  }
+)
 
 onMounted(() => {
   fetchProducts()

@@ -5,7 +5,25 @@
         <div class="logo">Sneaker Shop</div>
 
         <nav class="nav">
-          <router-link to="/">Sản phẩm</router-link>
+          <div
+            class="nav-dropdown"
+            @mouseenter="showBrandMenu = true"
+            @mouseleave="showBrandMenu = false"
+          >
+            <router-link to="/" class="nav-link">Sản phẩm</router-link>
+
+            <div v-if="showBrandMenu" class="dropdown-menu">
+              <button
+                v-for="brand in brands"
+                :key="brand"
+                type="button"
+                class="dropdown-item"
+                @click="selectBrand(brand)"
+              >
+                {{ brand }}
+              </button>
+            </div>
+          </div>
         </nav>
       </div>
 
@@ -30,6 +48,32 @@
     </div>
   </header>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const showBrandMenu = ref(false)
+
+const brands = ['Tất cả', 'Nike', 'Adidas', 'MLB', 'Vans', 'New Balance', 'Puma']
+
+const selectBrand = (brand) => {
+  showBrandMenu.value = false
+
+  if (brand === 'Tất cả') {
+    router.push({ path: '/' })
+    return
+  }
+
+  router.push({
+    path: '/',
+    query: {
+      brand
+    }
+  })
+}
+</script>
 
 <style scoped>
 .header {
@@ -91,6 +135,55 @@
 
 .nav a:hover,
 .nav a.router-link-active {
+  color: #facc15;
+}
+
+.nav-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 52px;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #facc15;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  transition: 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
   color: #facc15;
 }
 
