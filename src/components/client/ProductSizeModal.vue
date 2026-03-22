@@ -1,6 +1,16 @@
 <template>
   <div v-if="isOpen" class="modal-overlay" @click.self="handleClose">
     <div class="modal-box">
+      <div class="toast-container">
+        <div
+          v-for="toast in toasts"
+          :key="toast.id"
+          class="toast-success"
+        >
+          {{ toast.message }}
+        </div>
+      </div>
+
       <button type="button" class="close-btn" @click="handleClose">×</button>
 
       <div class="modal-content">
@@ -90,6 +100,7 @@ const emit = defineEmits(['close', 'add-to-cart'])
 
 const selectedSize = ref('')
 const quantity = ref(1)
+const toasts = ref([])
 
 const productImage = computed(() => {
   if (!props.product?.image) return ''
@@ -129,9 +140,27 @@ const increaseQuantity = () => {
   }
 }
 
+const triggerToast = () => {
+  const id = Date.now() + Math.random()
+
+  if (toasts.value.length >= 5) {
+    toasts.value.shift()
+  }
+
+  toasts.value.push({
+    id,
+    message: 'Đã thêm vào giỏ hàng'
+  })
+
+  setTimeout(() => {
+    toasts.value = toasts.value.filter((toast) => toast.id !== id)
+  }, 1800)
+}
+
 const resetModalState = () => {
   selectedSize.value = ''
   quantity.value = 1
+  toasts.value = []
 }
 
 const handleClose = () => {
@@ -161,7 +190,7 @@ const handleAddToCart = () => {
     stock: selectedSizeItem.value.quantity
   })
 
-  handleClose()
+  triggerToast()
 }
 </script>
 
@@ -183,8 +212,45 @@ const handleAddToCart = () => {
   background: #fff;
   border-radius: 20px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.toast-container {
+  position: fixed;
+  top: 100px;
+  right: 24px;
+  z-index: 4000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast-success {
+  min-width: 220px;
+  max-width: 320px;
+  background: #16a34a;
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transform: translateX(30px);
+  animation: toastIn 0.28s ease forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .close-btn {
@@ -358,6 +424,17 @@ const handleAddToCart = () => {
 
   .modal-price {
     font-size: 24px;
+  }
+
+  .toast-container {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+  }
+
+  .toast-success {
+    min-width: 0;
+    max-width: 100%;
   }
 }
 </style>

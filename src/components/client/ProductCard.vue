@@ -1,8 +1,12 @@
 <template>
   <div class="product-card">
-    <img :src="productImage" :alt="product.name" class="product-image" />
-
-    <h3 class="product-name">{{ product.name }}</h3>
+    <router-link
+      :to="`/product/${product.id}`"
+      class="product-link"
+    >
+      <img :src="productImage" :alt="product.name" class="product-image" />
+      <h3 class="product-name">{{ product.name }}</h3>
+    </router-link>
 
     <p class="product-price">{{ formatPrice(product.price) }}</p>
 
@@ -114,5 +118,11 @@ const handleAddToCart = (cartItem) => {
 
 .add-cart-btn:active {
   transform: scale(0.98);
+}
+
+.product-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 </style>
