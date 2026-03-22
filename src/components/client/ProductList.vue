@@ -208,4 +208,30 @@ onMounted(() => {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 1200px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .title {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+}
 </style>

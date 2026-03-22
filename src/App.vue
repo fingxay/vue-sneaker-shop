@@ -1,7 +1,11 @@
 <template>
   <div class="app-layout">
     <HeaderClient />
-    <router-view />
+
+    <main class="main-content">
+      <router-view />
+    </main>
+
     <FooterClient />
   </div>
 </template>
@@ -34,9 +38,12 @@ body {
   flex-direction: column;
 }
 
+.main-content {
+  flex: 1;
+}
+
 .container {
-  width: 1200px;
-  max-width: 95%;
+  width: min(1440px, calc(100% - 32px));
   margin: 0 auto;
 }
 </style>

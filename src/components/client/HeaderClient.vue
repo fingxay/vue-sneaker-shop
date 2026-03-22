@@ -2,7 +2,7 @@
   <header class="header">
     <div class="container header-wrap">
       <div class="header-left">
-        <div class="logo">Sneaker Shop</div>
+        <router-link to="/" class="logo">Sneaker Shop</router-link>
 
         <nav class="nav">
           <div
@@ -42,7 +42,7 @@
 
       <div class="header-right">
         <nav class="nav">
-          <router-link to="/">Giỏ hàng</router-link>
+          <router-link to="/cart">Giỏ hàng</router-link>
         </nav>
 
         <button type="button" class="login-btn">Đăng nhập</button>
@@ -151,6 +151,9 @@ watch(
   font-size: 24px;
   font-weight: 700;
   white-space: nowrap;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .nav {
@@ -260,5 +263,66 @@ watch(
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .header-wrap {
+    gap: 16px;
+  }
+
+  .header-left,
+  .header-right {
+    gap: 18px;
+  }
+
+  .search-box {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-center {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-wrap {
+    gap: 12px;
+  }
+
+  .header-left,
+  .header-right {
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .login-btn {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    padding: 12px 0;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .header-right .nav a {
+    font-size: 14px;
+  }
+
+  .login-btn {
+    padding: 0 12px;
+    font-size: 13px;
+  }
 }
 </style>
