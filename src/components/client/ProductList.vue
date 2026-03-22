@@ -2,12 +2,20 @@
   <div class="product-list">
     <h2 class="title">Danh sách sản phẩm</h2>
 
-    <div class="product-grid">
+    <p v-if="route.query.q" class="search-result-text">
+      Kết quả tìm kiếm cho: <strong>"{{ route.query.q }}"</strong>
+    </p>
+
+    <div v-if="paginatedProducts.length > 0" class="product-grid">
       <ProductCard
         v-for="product in paginatedProducts"
         :key="product.id"
         :product="product"
       />
+    </div>
+
+    <div v-else class="empty-state">
+      Không tìm thấy sản phẩm
     </div>
   </div>
 
@@ -55,14 +63,52 @@ const products = ref([])
 const currentPage = ref(1)
 const itemsPerPage = 12
 
-const filteredProducts = computed(() => {
-  const selectedBrand = route.query.brand
+const normalizeText = (text) => {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .trim()
+}
 
-  if (!selectedBrand) {
-    return products.value
+const isFuzzyMatch = (productName, keyword) => {
+  const nameWords = normalizeText(productName).split(/\s+/)
+  const keywordWords = normalizeText(keyword).split(/\s+/)
+
+  return keywordWords.every((keywordWord) =>
+    nameWords.some((nameWord) => nameWord.includes(keywordWord))
+  )
+}
+
+const filteredProducts = computed(() => {
+  let result = [...products.value]
+
+  const selectedBrand = route.query.brand
+  const searchKeyword = route.query.q
+
+  if (selectedBrand) {
+    result = result.filter((product) => product.brand === selectedBrand)
   }
 
-  return products.value.filter((product) => product.brand === selectedBrand)
+  if (searchKeyword) {
+    const normalizedKeyword = normalizeText(searchKeyword)
+
+    result = result.filter((product) => {
+      const normalizedName = normalizeText(product.name)
+      const normalizedBrand = normalizeText(product.brand)
+
+      const exactMatch =
+        normalizedName.includes(normalizedKeyword) ||
+        normalizedBrand.includes(normalizedKeyword)
+
+      const fuzzyMatch = isFuzzyMatch(product.name, searchKeyword)
+
+      return exactMatch || fuzzyMatch
+    })
+  }
+
+  return result
 })
 
 const paginatedProducts = computed(() => {
@@ -81,7 +127,7 @@ const fetchProducts = async () => {
 }
 
 watch(
-  () => route.query.brand,
+  () => [route.query.brand, route.query.q],
   () => {
     currentPage.value = 1
   }
@@ -102,10 +148,27 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.search-result-text {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #444;
+}
+
 .product-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  border: 1px dashed #ddd;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #666;
+  background: #fafafa;
 }
 
 .pagination {

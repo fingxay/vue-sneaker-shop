@@ -30,11 +30,13 @@
       <div class="header-center">
         <div class="search-box">
           <input
+            v-model="searchKeyword"
             type="text"
             placeholder="Tìm sản phẩm..."
             class="search-input"
+            @keyup.enter="handleSearch"
           />
-          <button type="button" class="search-btn">Tìm</button>
+          <button type="button" class="search-btn" @click="handleSearch">Tìm</button>
         </div>
       </div>
 
@@ -50,29 +52,61 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
+
 const showBrandMenu = ref(false)
+const searchKeyword = ref(route.query.q || '')
 
 const brands = ['Tất cả', 'Nike', 'Adidas', 'MLB', 'Vans', 'New Balance', 'Puma']
 
 const selectBrand = (brand) => {
   showBrandMenu.value = false
 
+  const query = {
+    ...route.query
+  }
+
   if (brand === 'Tất cả') {
-    router.push({ path: '/' })
-    return
+    delete query.brand
+  } else {
+    query.brand = brand
   }
 
   router.push({
     path: '/',
-    query: {
-      brand
-    }
+    query
   })
 }
+
+const handleSearch = () => {
+  const keyword = searchKeyword.value.trim()
+
+  const query = {
+    ...route.query
+  }
+
+  if (keyword) {
+    query.q = keyword
+  } else {
+    delete query.q
+  }
+
+  router.push({
+    path: '/',
+    query
+  })
+}
+
+watch(
+  () => route.query.q,
+  (newValue) => {
+    searchKeyword.value = newValue || ''
+  }
+)
 </script>
 
 <style scoped>
