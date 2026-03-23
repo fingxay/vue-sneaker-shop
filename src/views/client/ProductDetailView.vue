@@ -10,68 +10,76 @@
           {{ toast.message }}
         </div>
       </div>
-      <div v-if="product" class="product-detail">
-        <div class="product-image-wrap">
-          <img :src="productImage" :alt="product.name" class="product-image" />
-        </div>
 
-        <div class="product-info">
-          <h1 class="product-title">{{ product.name }}</h1>
-          <p class="product-price">{{ formatPrice(product.price) }}</p>
-          <p class="size-label">Chọn size:</p>
-
-          <div class="size-list">
-            <button
-              v-for="sizeItem in product.sizes"
-              :key="sizeItem.id"
-              type="button"
-              class="size-btn"
-              :class="{ active: selectedSize === sizeItem.size }"
-              :disabled="!sizeItem.quantity"
-              @click="selectSize(sizeItem)"
-            >
-              {{ sizeItem.size }}
-            </button>
+      <div v-if="product">
+        <div class="product-detail">
+          <div class="product-image-wrap">
+            <img :src="productImage" :alt="product.name" class="product-image" />
           </div>
 
-          <p v-if="selectedSizeItem" class="stock-text">
-            Còn lại: <strong>{{ selectedSizeItem.quantity }}</strong> sản phẩm
-          </p>
+          <div class="product-info">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <p class="product-price">{{ formatPrice(product.price) }}</p>
+            <p class="size-label">Chọn size:</p>
 
-          <div v-if="selectedSizeItem" class="quantity-wrap">
-            <p class="quantity-label">Số lượng:</p>
-
-            <div class="quantity-box">
+            <div class="size-list">
               <button
+                v-for="sizeItem in product.sizes"
+                :key="sizeItem.id"
                 type="button"
-                class="qty-btn"
-                :disabled="quantity <= 1"
-                @click="decreaseQuantity"
+                class="size-btn"
+                :class="{ active: selectedSize === sizeItem.size }"
+                :disabled="!sizeItem.quantity"
+                @click="selectSize(sizeItem)"
               >
-                -
-              </button>
-
-              <span class="qty-value">{{ quantity }}</span>
-
-              <button
-                type="button"
-                class="qty-btn"
-                :disabled="quantity >= selectedSizeItem.quantity"
-                @click="increaseQuantity"
-              >
-                +
+                {{ sizeItem.size }}
               </button>
             </div>
-          </div>
 
-          <button
-            type="button"
-            class="add-cart-btn"
-            :disabled="!selectedSize"
-            @click="handleAddToCart"
-          >
-            Thêm vào giỏ hàng
-          </button>
+            <p v-if="selectedSizeItem" class="stock-text">
+              Còn lại: <strong>{{ selectedSizeItem.quantity }}</strong> sản phẩm
+            </p>
+
+            <div v-if="selectedSizeItem" class="quantity-wrap">
+              <p class="quantity-label">Số lượng:</p>
+
+              <div class="quantity-box">
+                <button
+                  type="button"
+                  class="qty-btn"
+                  :disabled="quantity <= 1"
+                  @click="decreaseQuantity"
+                >
+                  -
+                </button>
+
+                <span class="qty-value">{{ quantity }}</span>
+
+                <button
+                  type="button"
+                  class="qty-btn"
+                  :disabled="quantity >= selectedSizeItem.quantity"
+                  @click="increaseQuantity"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="add-cart-btn"
+              :disabled="!selectedSize"
+              @click="handleAddToCart"
+            >
+              Thêm vào giỏ hàng
+            </button>
+          </div>
+        </div>
+
+        <div class="product-description-section">
+          <h2 class="description-title">Mô tả sản phẩm</h2>
+          <p class="description-text">{{ product.description }}</p>
         </div>
       </div>
 
@@ -397,5 +405,27 @@ const handleAddToCart = () => {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.product-description-section {
+  margin-top: 40px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.description-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #111;
+}
+
+.description-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+  white-space: pre-line;
 }
 </style>

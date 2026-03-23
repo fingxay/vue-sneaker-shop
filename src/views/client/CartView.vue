@@ -111,7 +111,15 @@
       </div>
 
       <div v-else class="empty-cart">
-        Giỏ hàng của bạn đang trống
+        <div class="empty-cart-box">
+          <h2 class="empty-cart-title">Giỏ hàng đang trống</h2>
+          <p class="empty-cart-text">
+            Bạn chưa thêm sản phẩm nào vào giỏ hàng.
+          </p>
+          <router-link to="/" class="continue-shopping-btn">
+            Tiếp tục mua sắm
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -452,6 +460,83 @@ const decreaseQuantity = (index) => {
   }
 
   .checkout-btn {
+    height: 44px;
+    font-size: 15px;
+  }
+}
+
+.empty-cart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 420px;
+}
+
+.empty-cart-box {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.empty-cart-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 14px;
+}
+
+.empty-cart-text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.continue-shopping-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: #facc15;
+  color: #111;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.continue-shopping-btn:hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 480px) {
+  .empty-cart {
+    min-height: 320px;
+  }
+
+  .empty-cart-box {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .empty-cart-title {
+    font-size: 24px;
+  }
+
+  .empty-cart-text {
+    font-size: 15px;
+  }
+
+  .continue-shopping-btn {
+    width: 100%;
+    min-width: unset;
     height: 44px;
     font-size: 15px;
   }
