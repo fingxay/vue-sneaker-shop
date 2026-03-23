@@ -126,9 +126,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 
-const cartItems = ref(JSON.parse(localStorage.getItem('cart')) || [])
+const cartItems = ref([])
 
 const totalAmount = computed(() => {
   return cartItems.value.reduce((total, item) => {
@@ -140,30 +141,143 @@ const formatPrice = (price) => {
   return price.toLocaleString('vi-VN') + 'đ'
 }
 
-const removeCartItem = (index) => {
-  cartItems.value.splice(index, 1)
-  localStorage.setItem('cart', JSON.stringify(cartItems.value))
-}
+const fetchCartItems = async () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
 
-const increaseQuantity = (index) => {
-  const item = cartItems.value[index]
-  if (!item) return
+  if (!currentUser) {
+    cartItems.value = []
+    return
+  }
 
-  if (item.quantity < item.stock) {
-    item.quantity++
-    localStorage.setItem('cart', JSON.stringify(cartItems.value))
+  try {
+    const userRes = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = userRes.data
+
+    const userCartItems = user.cart?.items || []
+
+    if (!userCartItems.length) {
+      cartItems.value = []
+      return
+    }
+
+    const productRequests = userCartItems.map((item) =>
+      axios.get(`http://localhost:3000/products/${item.productId}`)
+    )
+
+    const productResponses = await Promise.all(productRequests)
+    const products = productResponses.map((res) => res.data)
+
+    cartItems.value = userCartItems.map((item) => {
+      const product = products.find(
+        (productItem) => productItem.id === item.productId
+      )
+
+      const sizeInfo = product?.sizes?.find(
+        (sizeItem) => sizeItem.size === item.size
+      )
+
+      return {
+        productId: item.productId,
+        name: product?.name || '',
+        image: product?.image || '',
+        price: product?.price || 0,
+        size: item.size,
+        quantity: item.quantity,
+        stock: sizeInfo?.quantity || 0,
+        addedAt: item.addedAt
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    cartItems.value = []
   }
 }
 
-const decreaseQuantity = (index) => {
-  const item = cartItems.value[index]
-  if (!item) return
+const removeCartItem = async (index) => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  if (!currentUser) return
 
-  if (item.quantity > 1) {
-    item.quantity--
-    localStorage.setItem('cart', JSON.stringify(cartItems.value))
+  try {
+    const userRes = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = userRes.data
+    const userCartItems = user.cart?.items || []
+
+    userCartItems.splice(index, 1)
+
+    await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
+      cart: {
+        items: userCartItems,
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    await fetchCartItems()
+  } catch (error) {
+    console.error(error)
   }
 }
+const increaseQuantity = async (index) => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  if (!currentUser) return
+
+  const item = cartItems.value[index]
+  if (!item) return
+  if (item.quantity >= item.stock) return
+
+  try {
+    const userRes = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = userRes.data
+    const userCartItems = user.cart?.items || []
+
+    if (!userCartItems[index]) return
+
+    userCartItems[index].quantity += 1
+
+    await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
+      cart: {
+        items: userCartItems,
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    await fetchCartItems()
+  } catch (error) {
+    console.error(error)
+  }
+}
+const decreaseQuantity = async (index) => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  if (!currentUser) return
+
+  const item = cartItems.value[index]
+  if (!item) return
+  if (item.quantity <= 1) return
+
+  try {
+    const userRes = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = userRes.data
+    const userCartItems = user.cart?.items || []
+
+    if (!userCartItems[index]) return
+
+    userCartItems[index].quantity -= 1
+
+    await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
+      cart: {
+        items: userCartItems,
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    await fetchCartItems()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+onMounted(() => {
+  fetchCartItems()
+})
 </script>
 
 <style scoped>

@@ -9,19 +9,19 @@
       "cart": {
         "items": [
           {
-            "productId": 1,
-            "size": "40",
-            "quantity": 2,
-            "addedAt": "2026-03-23T10:00:00"
-          },
-          {
-            "productId": 2,
+            "productId": "2",
             "size": "38",
             "quantity": 1,
-            "addedAt": "2026-03-23T10:05:00"
+            "addedAt": "2026-03-23T18:10:30.645Z"
+          },
+          {
+            "productId": "4",
+            "size": "36",
+            "quantity": 1,
+            "addedAt": "2026-03-23T18:12:24.030Z"
           }
         ],
-        "updatedAt": "2026-03-23T10:05:00"
+        "updatedAt": "2026-03-23T18:12:24.030Z"
       }
     },
     {
@@ -42,8 +42,15 @@
       "password": "123456",
       "role": "user",
       "cart": {
-        "items": [],
-        "updatedAt": "2026-03-23T17:33:39.090Z"
+        "items": [
+          {
+            "productId": "1",
+            "size": "41",
+            "quantity": 2,
+            "addedAt": "2026-03-23T18:44:44.970Z"
+          }
+        ],
+        "updatedAt": "2026-03-23T18:44:44.970Z"
       }
     },
     {

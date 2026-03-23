@@ -90,10 +90,11 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
+const router = useRouter()
 const product = ref(null)
 
 const selectedSize = ref('')
@@ -166,38 +167,52 @@ const triggerToast = () => {
   }, 1800)
 }
 
-const handleAddToCart = () => {
+const handleAddToCart = async () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
+  if (!currentUser) {
+    router.push('/login')
+    return
+  }
+
   if (!product.value || !selectedSizeItem.value) return
 
-  const cartItem = {
-    productId: product.value.id,
-    name: product.value.name,
-    image: product.value.image,
-    price: product.value.price,
-    size: selectedSizeItem.value.size,
-    quantity: quantity.value,
-    stock: selectedSizeItem.value.quantity
-  }
+  try {
+    const userRes = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = userRes.data
 
-  const currentCart = JSON.parse(localStorage.getItem('cart')) || []
+    const userCartItems = user.cart?.items || []
 
-  const existingItem = currentCart.find(
-    (item) =>
-      item.productId === cartItem.productId &&
-      item.size === cartItem.size
-  )
+    const cartItem = {
+      productId: product.value.id,
+      size: selectedSizeItem.value.size,
+      quantity: quantity.value,
+      addedAt: new Date().toISOString()
+    }
 
-  if (existingItem) {
-    existingItem.quantity = Math.min(
-      existingItem.quantity + cartItem.quantity,
-      cartItem.stock
+    const existingItem = userCartItems.find(
+      (item) =>
+        item.productId === cartItem.productId &&
+        item.size === cartItem.size
     )
-  } else {
-    currentCart.push(cartItem)
-  }
 
-  localStorage.setItem('cart', JSON.stringify(currentCart))
-  triggerToast()
+    if (existingItem) {
+      existingItem.quantity += cartItem.quantity
+    } else {
+      userCartItems.push(cartItem)
+    }
+
+    await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
+      cart: {
+        items: userCartItems,
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    triggerToast()
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
@@ -352,22 +367,35 @@ const handleAddToCart = () => {
   max-width: 320px;
   height: 50px;
   border: none;
-  border-radius: 12px;
-  background: #facc15;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
   color: #111;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.add-cart-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 10px 22px rgba(234, 179, 8, 0.28);
 }
 
 .add-cart-btn:hover:not(:disabled) {
-  opacity: 0.92;
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+  box-shadow: 0 14px 28px rgba(234, 179, 8, 0.38);
+}
+
+.add-cart-btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
+  box-shadow: 0 6px 14px rgba(234, 179, 8, 0.24);
+}
+
+.add-cart-btn:disabled {
+  background: #f3e7a3;
+  color: #7c6f32;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  filter: none;
 }
 
 .toast-container {

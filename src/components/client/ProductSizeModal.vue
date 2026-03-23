@@ -1,89 +1,95 @@
 <template>
-  <div v-if="isOpen" class="modal-overlay" @click.self="handleClose">
-    <div class="modal-box">
-      <div class="toast-container">
-        <div
-          v-for="toast in toasts"
-          :key="toast.id"
-          class="toast-success"
-        >
-          {{ toast.message }}
-        </div>
-      </div>
-
-      <button type="button" class="close-btn" @click="handleClose">×</button>
-
-      <div class="modal-content">
-        <div class="modal-image-wrap">
-          <img :src="productImage" :alt="product.name" class="modal-image" />
+  <Teleport to="body">
+    <div v-if="isOpen" class="modal-overlay" @click.self="handleClose">
+      <div class="modal-box">
+        <div class="toast-container">
+          <div
+            v-for="toast in toasts"
+            :key="toast.id"
+            class="toast-success"
+          >
+            {{ toast.message }}
+          </div>
         </div>
 
-        <div class="modal-info">
-          <h2 class="modal-title">{{ product.name }}</h2>
-          <p class="modal-price">{{ formatPrice(product.price) }}</p>
+        <button type="button" class="close-btn" @click="handleClose">×</button>
 
-          <p class="size-label">Chọn size:</p>
-
-          <div class="size-list">
-            <button
-              v-for="sizeItem in product.sizes"
-              :key="sizeItem.id"
-              type="button"
-              class="size-btn"
-              :class="{ active: selectedSize === sizeItem.size }"
-              :disabled="!sizeItem.quantity"
-              @click="selectSize(sizeItem)"
-            >
-              {{ sizeItem.size }}
-            </button>
+        <div class="modal-content">
+          <div class="modal-image-wrap">
+            <img :src="productImage" :alt="product.name" class="modal-image" />
           </div>
 
-          <p v-if="selectedSizeItem" class="stock-text">
-            Còn lại: <strong>{{ selectedSizeItem.quantity }}</strong> sản phẩm
-          </p>
+          <div class="modal-info">
+            <h2 class="modal-title">{{ product.name }}</h2>
+            <p class="modal-price">{{ formatPrice(product.price) }}</p>
 
-          <div v-if="selectedSizeItem" class="quantity-wrap">
-            <p class="quantity-label">Số lượng:</p>
+            <p class="size-label">Chọn size:</p>
 
-            <div class="quantity-box">
+            <div class="size-list">
               <button
+                v-for="sizeItem in product.sizes"
+                :key="sizeItem.id"
                 type="button"
-                class="qty-btn"
-                :disabled="quantity <= 1"
-                @click="decreaseQuantity"
+                class="size-btn"
+                :class="{ active: selectedSize === sizeItem.size }"
+                :disabled="!sizeItem.quantity"
+                @click="selectSize(sizeItem)"
               >
-                -
-              </button>
-
-              <span class="qty-value">{{ quantity }}</span>
-
-              <button
-                type="button"
-                class="qty-btn"
-                :disabled="quantity >= selectedSizeItem.quantity"
-                @click="increaseQuantity"
-              >
-                +
+                {{ sizeItem.size }}
               </button>
             </div>
-          </div>
 
-          <button
-            type="button"
-            class="add-cart-btn"
-            :disabled="!selectedSize"
-            @click="handleAddToCart"
-          >
-            Xác nhận thêm vào giỏ hàng
-          </button>
+            <p v-if="selectedSizeItem" class="stock-text">
+              Còn lại: <strong>{{ selectedSizeItem.quantity }}</strong> sản phẩm
+            </p>
+
+            <div v-if="selectedSizeItem" class="quantity-wrap">
+              <p class="quantity-label">Số lượng:</p>
+
+              <div class="quantity-box">
+                <button
+                  type="button"
+                  class="qty-btn"
+                  :disabled="quantity <= 1"
+                  @click="decreaseQuantity"
+                >
+                  -
+                </button>
+
+                <span class="qty-value">{{ quantity }}</span>
+
+                <button
+                  type="button"
+                  class="qty-btn"
+                  :disabled="quantity >= selectedSizeItem.quantity"
+                  @click="increaseQuantity"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="add-cart-btn"
+              :disabled="!selectedSize"
+              @click="handleAddToCart"
+            >
+              Xác nhận thêm vào giỏ hàng
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   isOpen: {
@@ -96,7 +102,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'add-to-cart'])
+const emit = defineEmits(['close'])
 
 const selectedSize = ref('')
 const quantity = ref(1)
@@ -177,20 +183,53 @@ watch(
   }
 )
 
-const handleAddToCart = () => {
+const handleAddToCart = async () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
+  if (!currentUser) {
+    handleClose()
+    router.push('/login')
+    return
+  }
+
   if (!selectedSizeItem.value) return
 
-  emit('add-to-cart', {
-    productId: props.product.id,
-    name: props.product.name,
-    image: props.product.image,
-    price: props.product.price,
-    size: selectedSizeItem.value.size,
-    quantity: quantity.value,
-    stock: selectedSizeItem.value.quantity
-  })
+  try {
+    const userRes = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = userRes.data
 
-  triggerToast()
+    const userCartItems = user.cart?.items || []
+
+    const cartItem = {
+      productId: props.product.id,
+      size: selectedSizeItem.value.size,
+      quantity: quantity.value,
+      addedAt: new Date().toISOString()
+    }
+
+    const existingItem = userCartItems.find(
+      (item) =>
+        item.productId === cartItem.productId &&
+        item.size === cartItem.size
+    )
+
+    if (existingItem) {
+      existingItem.quantity += cartItem.quantity
+    } else {
+      userCartItems.push(cartItem)
+    }
+
+    await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
+      cart: {
+        items: userCartItems,
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    triggerToast()
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
@@ -392,24 +431,39 @@ const handleAddToCart = () => {
 }
 
 .add-cart-btn {
-  height: 48px;
+  width: 100%;
+  max-width: 320px;
+  height: 50px;
   border: none;
-  border-radius: 12px;
-  background: #facc15;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
   color: #111;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.add-cart-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 10px 22px rgba(234, 179, 8, 0.28);
 }
 
 .add-cart-btn:hover:not(:disabled) {
-  opacity: 0.92;
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+  box-shadow: 0 14px 28px rgba(234, 179, 8, 0.38);
+}
+
+.add-cart-btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
+  box-shadow: 0 6px 14px rgba(234, 179, 8, 0.24);
+}
+
+.add-cart-btn:disabled {
+  background: #f3e7a3;
+  color: #7c6f32;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  filter: none;
 }
 
 @media (max-width: 768px) {

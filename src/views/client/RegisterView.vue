@@ -137,7 +137,7 @@ const handleRegister = async () => {
       }
     })
 
-    router.push('/login?registered=success')
+    router.push('/login')
   } catch (error) {
     errorMessage.value = 'Có lỗi xảy ra khi đăng ký tài khoản'
     console.error(error)

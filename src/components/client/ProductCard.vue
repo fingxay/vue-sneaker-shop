@@ -62,62 +62,81 @@ const handleAddToCart = (cartItem) => {
 <style scoped>
 .product-card {
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 16px;
+  border: 1px solid #ececec;
+  border-radius: 20px;
   padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
-  transition: 0.2s ease;
 }
 
 .product-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  border-color: #facc15;
 }
 
 .product-image {
   width: 100%;
   height: 220px;
   object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 14px;
+  border-radius: 16px;
+  background: #f8f8f8;
+  margin-bottom: 16px;
 }
 
 .product-name {
   font-size: 18px;
   font-weight: 700;
   line-height: 1.5;
-  margin-bottom: 14px;
   color: #111;
-  min-height: calc(1.5em * 3);
+  margin-bottom: 14px;
+  min-height: 54px;
 }
 
 .product-price {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 700;
-  color: red;
-  margin-bottom: 16px;
+  color: #dc2626;
+  margin-bottom: 18px;
 }
 
 .add-cart-btn {
   width: 100%;
-  height: 42px;
+  max-width: 320px;
+  height: 50px;
   border: none;
-  border-radius: 10px;
-  background: #111;
-  color: #fff;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+  color: #111;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s ease;
-  margin-top: auto;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 10px 22px rgba(234, 179, 8, 0.28);
 }
 
-.add-cart-btn:hover {
-  opacity: 0.92;
+.add-cart-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+  box-shadow: 0 14px 28px rgba(234, 179, 8, 0.38);
 }
 
-.add-cart-btn:active {
-  transform: scale(0.98);
+.add-cart-btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
+  box-shadow: 0 6px 14px rgba(234, 179, 8, 0.24);
+}
+
+.add-cart-btn:disabled {
+  background: #f3e7a3;
+  color: #7c6f32;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  filter: none;
 }
 
 .product-link {

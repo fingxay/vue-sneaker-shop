@@ -15,7 +15,10 @@ const routes = [
   {
     path: '/cart',
     name: 'cart',
-    component: CartView
+    component: CartView,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/product/:id',
@@ -35,13 +38,27 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
-    component: ProfileView
+    component: ProfileView,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
+  if (to.meta.requiresAuth && !currentUser) {
+    next('/login')
+    return
+  }
+
+  next()
 })
 
 export default router
