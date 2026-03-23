@@ -62,7 +62,11 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const name = ref('')
 const email = ref('')
@@ -70,7 +74,7 @@ const password = ref('')
 const confirmPassword = ref('')
 const errorMessage = ref('')
 
-const handleRegister = () => {
+const handleRegister = async () => {
   errorMessage.value = ''
 
   if (!name.value.trim()) {
@@ -107,6 +111,36 @@ const handleRegister = () => {
   if (password.value !== confirmPassword.value) {
     errorMessage.value = 'Mật khẩu nhập lại không khớp'
     return
+  }
+
+  try {
+    const response = await axios.get('http://localhost:3000/users')
+    const users = response.data
+
+    const existedUser = users.find(
+      (user) => user.email.toLowerCase() === email.value.trim().toLowerCase()
+    )
+
+    if (existedUser) {
+      errorMessage.value = 'Email này đã được đăng ký'
+      return
+    }
+
+    await axios.post('http://localhost:3000/users', {
+      name: name.value.trim(),
+      email: email.value.trim(),
+      password: password.value,
+      role: 'user',
+      cart: {
+        items: [],
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    router.push('/login?registered=success')
+  } catch (error) {
+    errorMessage.value = 'Có lỗi xảy ra khi đăng ký tài khoản'
+    console.error(error)
   }
 }
 </script>

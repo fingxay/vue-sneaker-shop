@@ -45,14 +45,22 @@
           <router-link to="/cart">Giỏ hàng</router-link>
         </nav>
 
-        <router-link to="/login" class="login-btn">Đăng nhập</router-link>
+        <router-link v-if="!currentUser" to="/login" class="login-btn">
+          Đăng nhập
+        </router-link>
+
+        <div v-else class="user-box">
+          <router-link to="/profile" class="user-name">
+            {{ currentUser.name }}
+          </router-link>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -60,8 +68,23 @@ const route = useRoute()
 
 const showBrandMenu = ref(false)
 const searchKeyword = ref(route.query.q || '')
+const currentUser = ref(null)
 
 const brands = ['Tất cả', 'Nike', 'Adidas', 'MLB', 'Vans', 'New Balance', 'Puma']
+
+const getCurrentUser = () => {
+  const storedUser = localStorage.getItem('currentUser')
+
+  if (storedUser) {
+    currentUser.value = JSON.parse(storedUser)
+  } else {
+    currentUser.value = null
+  }
+}
+
+onMounted(() => {
+  getCurrentUser()
+})
 
 const selectBrand = (brand) => {
   showBrandMenu.value = false
@@ -102,10 +125,12 @@ const handleSearch = () => {
 }
 
 watch(
-  () => route.query.q,
-  (newValue) => {
-    searchKeyword.value = newValue || ''
-  }
+  () => route.fullPath,
+  () => {
+    searchKeyword.value = route.query.q || ''
+    getCurrentUser()
+  },
+  { immediate: true }
 )
 </script>
 
@@ -334,5 +359,31 @@ watch(
     padding: 0 12px;
     font-size: 13px;
   }
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #111 !important;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.user-name:hover,
+.user-name.router-link-active {
+  color: #111 !important;
+  text-decoration: none;
 }
 </style>

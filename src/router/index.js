@@ -4,6 +4,7 @@ import CartView from '@/views/client/CartView.vue'
 import ProductDetailView from '@/views/client/ProductDetailView.vue'
 import LoginView from '@/views/client/LoginView.vue'
 import RegisterView from '@/views/client/RegisterView.vue'
+import ProfileView from '@/views/client/ProfileView.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: RegisterView
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView
   }
 ]
 
