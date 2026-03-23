@@ -45,7 +45,7 @@
           <router-link to="/cart">Giỏ hàng</router-link>
         </nav>
 
-        <button type="button" class="login-btn">Đăng nhập</button>
+        <router-link to="/login" class="login-btn">Đăng nhập</router-link>
       </div>
     </div>
   </header>
@@ -255,6 +255,9 @@ watch(
 }
 
 .login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 42px;
   padding: 0 18px;
   border: 1px solid #facc15;
@@ -263,6 +266,13 @@ watch(
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.login-btn:hover {
+  background: #facc15;
+  color: #111;
 }
 
 @media (max-width: 1100px) {
