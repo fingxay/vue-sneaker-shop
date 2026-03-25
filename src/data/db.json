@@ -1,4 +1,33 @@
 {
+  "orders": [
+    {
+      "id": "9300",
+      "userId": "4fb2",
+      "customerInfo": {
+        "fullName": "tàng",
+        "phone": "0987654321",
+        "address": "123 hóc môn",
+        "city": "hà nội",
+        "note": "không có"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "1",
+          "name": "Giày Nike SB Force 58 Xám Đen REP 1:1",
+          "image": "sneaker1.jpg",
+          "price": 640000,
+          "size": "36",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 640000,
+      "shippingFee": 0,
+      "totalAmount": 640000,
+      "status": "pending",
+      "createdAt": "2026-03-25T03:34:36.016Z"
+    }
+  ],
   "users": [
     {
       "id": "1",
@@ -42,15 +71,8 @@
       "password": "123456",
       "role": "user",
       "cart": {
-        "items": [
-          {
-            "productId": "6",
-            "size": "37",
-            "quantity": 2,
-            "addedAt": "2026-03-25T02:58:49.219Z"
-          }
-        ],
-        "updatedAt": "2026-03-25T02:58:51.832Z"
+        "items": [],
+        "updatedAt": "2026-03-25T03:34:36.046Z"
       }
     },
     {
@@ -77,7 +99,7 @@
         {
           "id": 1,
           "size": "36",
-          "quantity": 4
+          "quantity": 3
         },
         {
           "id": 2,
@@ -332,7 +354,7 @@
         {
           "id": 2,
           "size": "37",
-          "quantity": 6
+          "quantity": 10
         },
         {
           "id": 3,

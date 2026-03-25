@@ -6,6 +6,7 @@ import LoginView from '@/views/client/LoginView.vue'
 import RegisterView from '@/views/client/RegisterView.vue'
 import ProfileView from '@/views/client/ProfileView.vue'
 import CheckoutView from '@/views/client/CheckoutView.vue'
+import OrdersView from '@/views/client/OrdersView.vue'
 
 const routes = [
   {
@@ -48,6 +49,12 @@ const routes = [
     path: '/checkout',
     name: 'checkout',
     component: CheckoutView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/orders',
+    name: 'orders',
+    component: OrdersView,
     meta: { requiresAuth: true }
   }
 ]

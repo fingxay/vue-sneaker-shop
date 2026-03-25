@@ -276,6 +276,53 @@ const handlePlaceOrder = async () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'))
     if (!currentUser) return
 
+    const orderPayload = {
+      userId: currentUser.id,
+      customerInfo: {
+        fullName: shippingInfo.fullName.trim(),
+        phone: shippingInfo.phone.trim(),
+        address: shippingInfo.address.trim(),
+        city: shippingInfo.city.trim(),
+        note: shippingInfo.note.trim()
+      },
+      paymentMethod: paymentMethod.value,
+      items: cartItems.value.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        size: item.size,
+        quantity: item.quantity
+      })),
+      subtotal: subtotal.value,
+      shippingFee: shippingFee.value,
+      totalAmount: totalAmount.value,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    }
+
+    for (const item of cartItems.value) {
+      const productRes = await axios.get(`http://localhost:3000/products/${item.productId}`)
+      const product = productRes.data
+
+      const updatedSizes = product.sizes.map((sizeItem) => {
+        if (sizeItem.size === item.size) {
+          return {
+            ...sizeItem,
+            quantity: Math.max((sizeItem.quantity || 0) - item.quantity, 0)
+          }
+        }
+
+        return sizeItem
+      })
+
+      await axios.patch(`http://localhost:3000/products/${item.productId}`, {
+        sizes: updatedSizes
+      })
+    }
+
+    await axios.post('http://localhost:3000/orders', orderPayload)
+
     await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
       cart: {
         items: [],
@@ -283,7 +330,7 @@ const handlePlaceOrder = async () => {
       }
     })
 
-    router.push('/cart')
+    router.push('/orders')
   } catch (error) {
     console.error(error)
     checkoutError.value = 'Đặt hàng thất bại, thử lại sau'

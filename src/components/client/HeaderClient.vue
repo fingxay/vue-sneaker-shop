@@ -42,6 +42,7 @@
 
       <div class="header-right">
         <nav class="nav">
+          <router-link to="/orders">Hóa đơn</router-link>
           <router-link to="/cart">Giỏ hàng</router-link>
         </nav>
 
