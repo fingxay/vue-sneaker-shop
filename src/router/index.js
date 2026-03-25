@@ -5,6 +5,7 @@ import ProductDetailView from '@/views/client/ProductDetailView.vue'
 import LoginView from '@/views/client/LoginView.vue'
 import RegisterView from '@/views/client/RegisterView.vue'
 import ProfileView from '@/views/client/ProfileView.vue'
+import CheckoutView from '@/views/client/CheckoutView.vue'
 
 const routes = [
   {
@@ -42,6 +43,12 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: '/checkout',
+    name: 'checkout',
+    component: CheckoutView,
+    meta: { requiresAuth: true }
   }
 ]
 

@@ -150,7 +150,7 @@ const formatPrice = (price) => {
   return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
 }
 
-const triggerToast = () => {
+const triggerToast = (message) => {
   const id = Date.now() + Math.random()
 
   if (toasts.value.length >= 5) {
@@ -159,7 +159,7 @@ const triggerToast = () => {
 
   toasts.value.push({
     id,
-    message: 'Đã thêm vào giỏ hàng +'
+    message
   })
 
   setTimeout(() => {
@@ -183,23 +183,32 @@ const handleAddToCart = async () => {
 
     const userCartItems = user.cart?.items || []
 
-    const cartItem = {
-      productId: product.value.id,
-      size: selectedSizeItem.value.size,
-      quantity: quantity.value,
-      addedAt: new Date().toISOString()
-    }
-
     const existingItem = userCartItems.find(
       (item) =>
-        item.productId === cartItem.productId &&
-        item.size === cartItem.size
+        String(item.productId) === String(product.value.id) &&
+        item.size === selectedSizeItem.value.size
     )
 
+    const stockQuantity = selectedSizeItem.value.quantity || 0
+    const currentCartQuantity = existingItem ? existingItem.quantity : 0
+    const availableToAdd = stockQuantity - currentCartQuantity
+
+    if (availableToAdd <= 0) {
+      triggerToast('Sản phẩm trong giỏ đã đạt tối đa tồn kho')
+      return
+    }
+
+    const quantityToAdd = Math.min(quantity.value, availableToAdd)
+
     if (existingItem) {
-      existingItem.quantity += cartItem.quantity
+      existingItem.quantity += quantityToAdd
     } else {
-      userCartItems.push(cartItem)
+      userCartItems.push({
+        productId: product.value.id,
+        size: selectedSizeItem.value.size,
+        quantity: quantityToAdd,
+        addedAt: new Date().toISOString()
+      })
     }
 
     await axios.patch(`http://localhost:3000/users/${currentUser.id}`, {
@@ -209,7 +218,7 @@ const handleAddToCart = async () => {
       }
     })
 
-    triggerToast()
+    triggerToast('Đã thêm vào giỏ hàng')
   } catch (error) {
     console.error(error)
   }

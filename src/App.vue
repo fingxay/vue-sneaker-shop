@@ -46,4 +46,9 @@ body {
   width: min(1440px, calc(100% - 32px));
   margin: 0 auto;
 }
+
+html,
+body {
+  overscroll-behavior: none;
+}
 </style>

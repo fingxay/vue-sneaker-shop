@@ -44,13 +44,13 @@
       "cart": {
         "items": [
           {
-            "productId": "1",
-            "size": "41",
+            "productId": "6",
+            "size": "37",
             "quantity": 2,
-            "addedAt": "2026-03-23T18:44:44.970Z"
+            "addedAt": "2026-03-25T02:58:49.219Z"
           }
         ],
-        "updatedAt": "2026-03-23T18:44:44.970Z"
+        "updatedAt": "2026-03-25T02:58:51.832Z"
       }
     },
     {
@@ -1416,5 +1416,6 @@
         }
       ]
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

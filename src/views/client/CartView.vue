@@ -95,15 +95,15 @@
 
             <div class="summary-row">
               <span>Phí vận chuyển</span>
-              <span>0đ</span>
+              <span>{{ formatPrice(shippingFee) }}</span>
             </div>
 
             <div class="summary-row total">
               <span>Tổng cộng</span>
-              <span>{{ formatPrice(totalAmount) }}</span>
+              <span>{{ formatPrice(finalTotal) }}</span>
             </div>
 
-            <button type="button" class="checkout-btn">
+            <button type="button" class="checkout-btn" @click="goToCheckout">
               Tiến hành thanh toán
             </button>
           </div>
@@ -128,6 +128,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToCheckout = () => {
+  router.push('/checkout')
+}
 
 const cartItems = ref([])
 
@@ -277,6 +284,16 @@ const decreaseQuantity = async (index) => {
 
 onMounted(() => {
   fetchCartItems()
+})
+
+const shippingFee = computed(() => {
+  if (!cartItems.value.length) return 0
+  if (totalAmount.value >= 1000000) return 0
+  return 30000
+})
+
+const finalTotal = computed(() => {
+  return totalAmount.value + shippingFee.value
 })
 </script>
 
