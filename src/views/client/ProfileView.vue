@@ -31,6 +31,44 @@
           </div>
         </div>
 
+        <div class="profile-section">
+          <h2 class="section-title">Thông tin giao hàng</h2>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Họ và tên</label>
+              <input v-model="shippingInfo.fullName" type="text" placeholder="Nhập họ và tên" />
+            </div>
+
+            <div class="form-group">
+              <label>Số điện thoại</label>
+              <input v-model="shippingInfo.phone" type="text" placeholder="Nhập số điện thoại" />
+            </div>
+
+            <div class="form-group full-width">
+              <label>Địa chỉ</label>
+              <input v-model="shippingInfo.address" type="text" placeholder="Nhập địa chỉ nhận hàng" />
+            </div>
+
+            <div class="form-group">
+              <label>Tỉnh / Thành phố</label>
+              <input v-model="shippingInfo.city" type="text" placeholder="Ví dụ: Hà Nội" />
+            </div>
+
+            <div class="form-group">
+              <label>Ghi chú</label>
+              <input v-model="shippingInfo.note" type="text" placeholder="Ghi chú thêm nếu có" />
+            </div>
+          </div>
+
+          <button type="button" class="save-shipping-btn" @click="handleSaveShippingInfo">
+            Lưu thông tin giao hàng
+          </button>
+          <p v-if="shippingMessage" class="shipping-message">
+            {{ shippingMessage }}
+          </p>
+        </div>
+
         <div class="profile-actions">
           <button type="button" class="logout-btn" @click="handleLogout">
             Đăng xuất
@@ -50,6 +88,47 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { reactive } from 'vue'
+import axios from 'axios'
+
+const shippingMessage = ref('')
+
+const shippingInfo = reactive({
+  fullName: '',
+  phone: '',
+  address: '',
+  city: '',
+  note: ''
+})
+
+const handleSaveShippingInfo = async () => {
+  if (!currentUser.value?.id) return
+
+  shippingMessage.value = ''
+
+  try {
+    await axios.patch(`http://localhost:3000/users/${currentUser.value.id}`, {
+      shippingInfo: {
+        fullName: shippingInfo.fullName.trim(),
+        phone: shippingInfo.phone.trim(),
+        address: shippingInfo.address.trim(),
+        city: shippingInfo.city.trim(),
+        note: shippingInfo.note.trim()
+      }
+    })
+
+    shippingMessage.value = 'Đã lưu thông tin giao hàng'
+    setTimeout(() => {
+      shippingMessage.value = ''
+    }, 3000)
+  } catch (error) {
+    console.error(error)
+    shippingMessage.value = 'Lưu thông tin thất bại'
+    setTimeout(() => {
+      shippingMessage.value = ''
+    }, 3000)
+  }
+}
 
 const currentUser = ref(null)
 const router = useRouter()
@@ -61,6 +140,23 @@ const getCurrentUser = () => {
     currentUser.value = JSON.parse(storedUser)
   } else {
     currentUser.value = null
+  }
+}
+
+const fetchUserShippingInfo = async () => {
+  if (!currentUser.value?.id) return
+
+  try {
+    const res = await axios.get(`http://localhost:3000/users/${currentUser.value.id}`)
+    const user = res.data
+
+    shippingInfo.fullName = user.shippingInfo?.fullName || user.name || ''
+    shippingInfo.phone = user.shippingInfo?.phone || ''
+    shippingInfo.address = user.shippingInfo?.address || ''
+    shippingInfo.city = user.shippingInfo?.city || ''
+    shippingInfo.note = user.shippingInfo?.note || ''
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -81,8 +177,9 @@ const avatarText = computed(() => {
     .join('')
 })
 
-onMounted(() => {
+onMounted(async () => {
   getCurrentUser()
+  await fetchUserShippingInfo()
 })
 </script>
 
@@ -276,6 +373,98 @@ onMounted(() => {
   }
 
   .logout-btn {
+    width: 100%;
+  }
+}
+
+.profile-section {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid #ececec;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+.form-group input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #d4d4d8;
+  border-radius: 14px;
+  padding: 0 16px;
+  font-size: 15px;
+  color: #111;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.18);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.save-shipping-btn {
+  margin-top: 18px;
+  min-width: 220px;
+  height: 46px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 12px;
+  background: #facc15;
+  color: #111;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.save-shipping-btn:hover {
+  opacity: 0.92;
+}
+
+.shipping-message {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+  .save-shipping-btn {
     width: 100%;
   }
 }

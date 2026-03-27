@@ -141,6 +141,24 @@ const shippingInfo = reactive({
   note: ''
 })
 
+const fillShippingInfoFromUser = async () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  if (!currentUser) return
+
+  try {
+    const res = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const user = res.data
+
+    shippingInfo.fullName = user.shippingInfo?.fullName || user.name || ''
+    shippingInfo.phone = user.shippingInfo?.phone || ''
+    shippingInfo.address = user.shippingInfo?.address || ''
+    shippingInfo.city = user.shippingInfo?.city || ''
+    shippingInfo.note = user.shippingInfo?.note || ''
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const cartItems = ref([])
 const loading = ref(false)
 
@@ -190,7 +208,8 @@ const subtotal = computed(() => {
 })
 
 const shippingFee = computed(() => {
-  return cartItems.value.length ? 0 : 0
+  if (!cartItems.value.length) return 0
+  return subtotal.value >= 1000000 ? 0 : 30000
 })
 
 const totalAmount = computed(() => {
@@ -202,8 +221,9 @@ const formatPrice = (price) => {
   return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
 }
 
-onMounted(() => {
-  fetchCheckoutItems()
+onMounted(async () => {
+  await fillShippingInfoFromUser()
+  await fetchCheckoutItems()
 })
 
 const handlePlaceOrder = async () => {

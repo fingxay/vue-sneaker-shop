@@ -11,8 +11,12 @@
 
       <div v-else-if="!orders.length" class="orders-empty">
         <div class="orders-empty-box">
-          <h2>Chưa có hóa đơn nào</h2>
-          <p>Đơn hàng của bạn sau này sẽ hiện ở đây.</p>
+          <h2>Bạn chưa có đơn hàng nào</h2>
+          <p>Hãy chọn sản phẩm rồi quay lại đây để xem hóa đơn nhé.</p>
+
+          <router-link to="/" class="shop-now-btn">
+            Tiếp tục mua sắm
+          </router-link>
         </div>
       </div>
 
@@ -90,7 +94,7 @@
               v-if="order.status === 'pending'"
               type="button"
               class="cancel-order-btn"
-              @click="confirmCancelOrder(order)"
+              @click="openCancelModal(order)"
             >
               Hủy đơn
             </button>
@@ -98,16 +102,30 @@
         </div>
       </div>
     </div>
+
+    <BaseConfirmModal
+      :isOpen="showCancelModal"
+      title="Xác nhận hủy đơn"
+      message="Bạn có chắc muốn hủy đơn hàng này không?"
+      confirmText="Xác nhận hủy"
+      cancelText="Quay lại"
+      variant="danger"
+      @cancel="handleCloseCancelModal"
+      @confirm="confirmCancelOrder"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
 
 const expandedCustomerIds = ref([])
 const orders = ref([])
 const loading = ref(false)
+const showCancelModal = ref(false)
+const selectedOrder = ref(null)
 
 const toggleCustomerInfo = (orderId) => {
   if (expandedCustomerIds.value.includes(orderId)) {
@@ -127,12 +145,22 @@ const formatPrice = (price) => {
   return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
 }
 
-const confirmCancelOrder = (order) => {
-  const isConfirmed = window.confirm('Bạn có chắc muốn hủy đơn hàng này không?')
+const confirmCancelOrder = async () => {
+  if (!selectedOrder.value) return
 
-  if (!isConfirmed) return
+  await handleCancelOrder(selectedOrder.value)
+  showCancelModal.value = false
+  selectedOrder.value = null
+}
 
-  handleCancelOrder(order)
+const openCancelModal = (order) => {
+  selectedOrder.value = order
+  showCancelModal.value = true
+}
+
+const handleCloseCancelModal = () => {
+  showCancelModal.value = false
+  selectedOrder.value = null
 }
 
 const handleCancelOrder = async (order) => {
@@ -180,12 +208,12 @@ const fetchOrders = async () => {
   }
 
   try {
-    loading.value = true
+    loading.value = true  
+    const res = await axios.get('http://localhost:3000/orders')
 
-    const res = await axios.get(`http://localhost:3000/orders?userId=${currentUser.id}`)
-    orders.value = res.data.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    )
+    orders.value = res.data
+      .filter((order) => String(order.userId) === String(currentUser.id))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   } catch (error) {
     console.error(error)
     orders.value = []
@@ -416,5 +444,56 @@ const formatOrderStatus = (status) => {
 .toggle-customer-btn:hover {
   color: #a16207;
   text-decoration: underline;
+}
+
+.orders-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 420px;
+  padding: 40px 16px;
+}
+
+.orders-empty-box {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.orders-empty-box h2 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  color: #111827;
+}
+
+.orders-empty-box p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #6b7280;
+}
+
+.shop-now-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 12px 22px;
+  background: #facc15;
+  color: #111827;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.shop-now-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
 }
 </style>
