@@ -88,7 +88,12 @@ const handleLogin = async () => {
     }
 
     localStorage.setItem('currentUser', JSON.stringify(currentUser))
-    router.push('/')
+    
+    if (foundUser.role === 'admin') {
+      router.push('/admin')
+    } else {
+      router.push('/')
+    }
   } catch (error) {
     errorMessage.value = 'Có lỗi xảy ra, thử lại sau'
     console.error(error)

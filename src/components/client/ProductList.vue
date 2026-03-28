@@ -83,7 +83,7 @@ const isFuzzyMatch = (productName, keyword) => {
 }
 
 const filteredProducts = computed(() => {
-  let result = [...products.value]
+  let result = products.value.filter((product) => product.isActive !== false)
 
   const selectedBrand = route.query.brand
   const searchKeyword = route.query.q

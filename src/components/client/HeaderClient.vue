@@ -42,6 +42,9 @@
 
       <div class="header-right">
         <nav class="nav">
+          <router-link v-if="currentUser?.role === 'admin'" to="/admin">
+            Admin
+          </router-link>
           <router-link to="/orders">Hóa đơn</router-link>
           <router-link to="/cart">Giỏ hàng</router-link>
         </nav>
