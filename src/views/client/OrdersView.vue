@@ -3,6 +3,62 @@
     <div class="container">
       <h1 class="orders-title">Hóa đơn</h1>
 
+      <div v-if="!loading && orders.length" class="orders-filter-tabs">
+        <button
+          type="button"
+          class="orders-filter-btn"
+          :class="{ active: selectedStatus === 'all' }"
+          @click="selectedStatus = 'all'"
+        >
+          Tất cả
+        </button>
+
+        <button
+          type="button"
+          class="orders-filter-btn"
+          :class="{ active: selectedStatus === 'pending' }"
+          @click="selectedStatus = 'pending'"
+        >
+          Chờ xác nhận
+        </button>
+
+        <button
+          type="button"
+          class="orders-filter-btn"
+          :class="{ active: selectedStatus === 'confirmed' }"
+          @click="selectedStatus = 'confirmed'"
+        >
+          Đã xác nhận
+        </button>
+
+        <button
+          type="button"
+          class="orders-filter-btn"
+          :class="{ active: selectedStatus === 'shipping' }"
+          @click="selectedStatus = 'shipping'"
+        >
+          Đang giao
+        </button>
+
+        <button
+          type="button"
+          class="orders-filter-btn"
+          :class="{ active: selectedStatus === 'completed' }"
+          @click="selectedStatus = 'completed'"
+        >
+          Hoàn thành
+        </button>
+
+        <button
+          type="button"
+          class="orders-filter-btn"
+          :class="{ active: selectedStatus === 'cancelled' }"
+          @click="selectedStatus = 'cancelled'"
+        >
+          Đã hủy
+        </button>
+      </div>
+
       <div v-if="loading" class="orders-empty">
         <div class="orders-empty-box">
           <h2>Đang tải hóa đơn...</h2>
@@ -22,7 +78,7 @@
 
       <div v-else class="orders-list">
         <div
-          v-for="order in orders"
+          v-for="order in filteredOrders"
           :key="order.id"
           class="order-card"
         >
@@ -117,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
 
@@ -126,6 +182,16 @@ const orders = ref([])
 const loading = ref(false)
 const showCancelModal = ref(false)
 const selectedOrder = ref(null)
+
+const selectedStatus = ref('all')
+
+const filteredOrders = computed(() => {
+  if (selectedStatus.value === 'all') {
+    return orders.value
+  }
+
+  return orders.value.filter((order) => order.status === selectedStatus.value)
+})
 
 const toggleCustomerInfo = (orderId) => {
   if (expandedCustomerIds.value.includes(orderId)) {
@@ -495,5 +561,40 @@ const formatOrderStatus = (status) => {
 .shop-now-btn:hover {
   transform: translateY(-1px);
   opacity: 0.92;
+}
+
+.orders-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+  margin-top: 24px;
+}
+
+.orders-filter-btn {
+  padding: 10px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.orders-filter-btn:hover {
+  border-color: #facc15;
+  color: #111827;
+}
+
+.orders-filter-btn.active {
+  background: #facc15;
+  border-color: #facc15;
+  color: #111827;
+}
+
+.orders-page {
+  padding-top: 120px;
 }
 </style>

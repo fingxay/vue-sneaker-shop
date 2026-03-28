@@ -109,7 +109,7 @@
               <button
                 type="button"
                 class="place-order-btn"
-                :disabled="!cartItems.length"
+                :disabled="!cartItems.length || isProcessingBankTransfer"
                 @click="handlePlaceOrder"
               >
                 Đặt hàng
@@ -119,6 +119,43 @@
         </div>
       </div>
     </div>
+
+    <div v-if="showBankQrModal" class="bank-qr-overlay">
+      <div class="bank-qr-modal">
+        <h3 class="bank-qr-title">Quét mã để chuyển khoản</h3>
+
+        <img
+          class="bank-qr-image"
+          :src="bankQrUrl"
+          alt="QR chuyển khoản ngân hàng"
+        />
+
+        <div class="bank-transfer-info">
+          <p><strong>Ngân hàng:</strong> MB Bank</p>
+          <p><strong>Chủ tài khoản:</strong> NGUYEN HONG TAI</p>
+          <p><strong>Số tài khoản:</strong> 09726519527</p>
+          <p><strong>Số tiền:</strong> {{ formatPrice(totalAmount) }}</p>
+          <p><strong>Nội dung:</strong> {{ bankTransferCode }}</p>
+        </div>
+
+        <p class="bank-qr-note" v-if="!isProcessingBankTransfer">
+          Vui lòng giữ nguyên màn hình để hệ thống xác nhận thanh toán.
+        </p>
+
+        <p class="bank-qr-note" v-else>
+          Đang xác nhận thanh toán...
+        </p>
+
+        <button
+          type="button"
+          class="close-bank-qr-btn"
+          :disabled="isProcessingBankTransfer"
+          @click="handleCloseBankQrModal"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -126,6 +163,11 @@
 import { reactive, ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+
+const showBankQrModal = ref(false)
+const isProcessingBankTransfer = ref(false)
+const bankTransferCode = ref('')
+const bankTransferTimeout = ref(null)
 
 const router = useRouter()
 
@@ -216,6 +258,11 @@ const totalAmount = computed(() => {
   return subtotal.value + shippingFee.value
 })
 
+const bankQrUrl = computed(() => {
+  const qrContent = `BANKING|MB Bank|09726519527|NGUYEN HONG TAI|${totalAmount.value}|${bankTransferCode.value || 'THANHTOAN'}`
+  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrContent)}`
+})
+
 const formatPrice = (price) => {
   if (!price) return '0đ'
   return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
@@ -226,72 +273,7 @@ onMounted(async () => {
   await fetchCheckoutItems()
 })
 
-const handlePlaceOrder = async () => {
-  checkoutError.value = ''
-
-  const fullName = shippingInfo.fullName.trim()
-
-  if (!fullName) {
-    checkoutError.value = 'Vui lòng nhập họ và tên'
-    return
-  }
-
-  if (fullName.length < 2) {
-    checkoutError.value = 'Họ và tên quá ngắn'
-    return
-  }
-
-  if (!/^[\p{L}\s]+$/u.test(fullName)) {
-    checkoutError.value = 'Họ và tên không hợp lệ'
-    return
-  }
-
-  const phone = shippingInfo.phone.trim()
-
-  if (!phone) {
-    checkoutError.value = 'Vui lòng nhập số điện thoại'
-    return
-  }
-
-  if (!/^(0|\+84)[0-9]{9,10}$/.test(phone)) {
-    checkoutError.value = 'Số điện thoại không hợp lệ'
-    return
-  }
-
-  const address = shippingInfo.address.trim()
-
-  if (!address) {
-    checkoutError.value = 'Vui lòng nhập địa chỉ nhận hàng'
-    return
-  }
-
-  if (address.length < 6) {
-    checkoutError.value = 'Địa chỉ nhận hàng quá ngắn'
-    return
-  }
-
-  const city = shippingInfo.city.trim()
-
-  if (!city) {
-    checkoutError.value = 'Vui lòng nhập tỉnh / thành phố'
-    return
-  }
-
-  if (city.length < 2) {
-    checkoutError.value = 'Tỉnh / thành phố không hợp lệ'
-    return
-  }
-
-  if (!/^[\p{L}\s]+$/u.test(city)) {
-    checkoutError.value = 'Tỉnh / thành phố không hợp lệ'
-    return
-  }
-
-  if (!cartItems.value.length) {
-    checkoutError.value = 'Giỏ hàng đang trống'
-    return
-  }
-
+const createOrder = async () => {
   try {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'))
     if (!currentUser) return
@@ -355,6 +337,105 @@ const handlePlaceOrder = async () => {
     console.error(error)
     checkoutError.value = 'Đặt hàng thất bại, thử lại sau'
   }
+}
+
+const handleFakeBankTransfer = async () => {
+  try {
+    isProcessingBankTransfer.value = true
+    showBankQrModal.value = false
+    await createOrder()
+  } catch (error) {
+    console.error(error)
+    checkoutError.value = 'Xác nhận thanh toán thất bại, thử lại sau'
+  } finally {
+    isProcessingBankTransfer.value = false
+    bankTransferTimeout.value = null
+  }
+}
+
+const handleCloseBankQrModal = () => {
+  if (bankTransferTimeout.value) {
+    clearTimeout(bankTransferTimeout.value)
+    bankTransferTimeout.value = null
+  }
+
+  showBankQrModal.value = false
+  isProcessingBankTransfer.value = false
+}
+
+const handlePlaceOrder = async () => {
+  checkoutError.value = ''
+
+  const fullName = shippingInfo.fullName.trim()
+
+  if (!fullName) {
+    checkoutError.value = 'Vui lòng nhập họ và tên'
+    return
+  }
+
+  if (fullName.length < 2) {
+    checkoutError.value = 'Họ và tên quá ngắn'
+    return
+  }
+
+  if (!/^[\p{L}\s]+$/u.test(fullName)) {
+    checkoutError.value = 'Họ và tên không hợp lệ'
+    return
+  }
+
+  const phone = shippingInfo.phone.trim()
+
+  if (!phone) {
+    checkoutError.value = 'Vui lòng nhập số điện thoại'
+    return
+  }
+
+  if (!/^(0|\+84)[0-9]{9,10}$/.test(phone)) {
+    checkoutError.value = 'Số điện thoại không hợp lệ'
+    return
+  }
+
+  const address = shippingInfo.address.trim()
+
+  if (!address) {
+    checkoutError.value = 'Vui lòng nhập địa chỉ nhận hàng'
+    return
+  }
+
+  if (address.length < 6) {
+    checkoutError.value = 'Địa chỉ nhận hàng quá ngắn'
+    return
+  }
+
+  const city = shippingInfo.city.trim()
+
+  if (!city) {
+    checkoutError.value = 'Vui lòng nhập tỉnh / thành phố'
+    return
+  }
+
+  if (city.length < 2) {
+    checkoutError.value = 'Tỉnh / thành phố không hợp lệ'
+    return
+  }
+
+  if (!/^[\p{L}\s]+$/u.test(city)) {
+    checkoutError.value = 'Tỉnh / thành phố không hợp lệ'
+    return
+  }
+
+  if (paymentMethod.value === 'banking') {
+    bankTransferCode.value = `THANHTOAN${Date.now()}`
+    showBankQrModal.value = true
+
+    bankTransferTimeout.value = setTimeout(() => {
+      handleFakeBankTransfer()
+    }, 4000)
+
+    return
+  }
+
+  await createOrder()
 }
 </script>
 
@@ -624,5 +705,102 @@ const handlePlaceOrder = async () => {
   color: #dc2626;
   font-size: 14px;
   font-weight: 600;
+}
+
+.bank-qr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.bank-qr-modal {
+  width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.bank-qr-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+}
+
+.bank-qr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 220px;
+  height: 220px;
+  margin: 20px auto 0;
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.bank-transfer-info {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 15px;
+  color: #374151;
+}
+
+.bank-transfer-info p {
+  margin: 0;
+}
+
+.bank-qr-note {
+  margin-top: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #6b7280;
+  text-align: center;
+}
+
+.close-bank-qr-btn {
+  width: 100%;
+  height: 48px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 14px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.close-bank-qr-btn:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.close-bank-qr-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.bank-qr-image {
+  display: block;
+  width: 220px;
+  height: 220px;
+  margin: 20px auto 0;
+  border-radius: 16px;
+  background: #f9fafb;
 }
 </style>

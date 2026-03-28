@@ -141,7 +141,7 @@ src/
 ```
 
 ## Luồng hoạt động chính
-
+Developer: Reload Window
 1. Người dùng vào trang chủ để xem danh sách sản phẩm.
 2. Có thể lọc theo thương hiệu hoặc tìm kiếm theo từ khóa.
 3. Chọn sản phẩm để xem chi tiết, chọn size và số lượng.
