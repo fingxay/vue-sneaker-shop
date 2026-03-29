@@ -437,7 +437,7 @@
       "subtotal": 530000,
       "shippingFee": 30000,
       "totalAmount": 560000,
-      "status": "pending",
+      "status": "confirmed",
       "createdAt": "2026-03-28T10:11:56.949Z"
     },
     {
@@ -464,7 +464,7 @@
       "subtotal": 530000,
       "shippingFee": 30000,
       "totalAmount": 560000,
-      "status": "pending",
+      "status": "confirmed",
       "createdAt": "2026-03-28T10:11:58.045Z"
     },
     {
@@ -518,7 +518,7 @@
       "subtotal": 890000,
       "shippingFee": 30000,
       "totalAmount": 920000,
-      "status": "pending",
+      "status": "confirmed",
       "createdAt": "2026-03-28T10:12:12.700Z"
     },
     {
@@ -547,6 +547,33 @@
       "totalAmount": 670000,
       "status": "cancelled",
       "createdAt": "2026-03-28T10:12:22.400Z"
+    },
+    {
+      "id": "b023",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "3",
+          "name": "MLB Chunky Liner NY Embo Monogram Trắng REP 1:1",
+          "image": "sneaker3.jpg",
+          "price": 720000,
+          "size": "41",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 720000,
+      "shippingFee": 30000,
+      "totalAmount": 750000,
+      "status": "pending",
+      "createdAt": "2026-03-29T19:46:00.575Z"
     }
   ],
   "users": [
@@ -582,8 +609,22 @@
       "password": "admin123",
       "role": "admin",
       "cart": {
-        "items": [],
-        "updatedAt": "2026-03-23T10:10:00"
+        "items": [
+          {
+            "productId": "3",
+            "size": "38",
+            "quantity": 4,
+            "addedAt": "2026-03-29T21:19:08.755Z"
+          }
+        ],
+        "updatedAt": "2026-03-29T21:19:09.251Z"
+      },
+      "shippingInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
       }
     },
     {
@@ -750,7 +791,7 @@
         {
           "id": 6,
           "size": "41",
-          "quantity": 6
+          "quantity": 5
         },
         {
           "id": 7,
