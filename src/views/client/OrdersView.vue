@@ -8,7 +8,7 @@
           type="button"
           class="orders-filter-btn"
           :class="{ active: selectedStatus === 'all' }"
-          @click="selectedStatus = 'all'"
+          @click="handleChangeStatus('all')"
         >
           Tất cả
         </button>
@@ -17,7 +17,7 @@
           type="button"
           class="orders-filter-btn"
           :class="{ active: selectedStatus === 'pending' }"
-          @click="selectedStatus = 'pending'"
+          @click="handleChangeStatus('pending')"
         >
           Chờ xác nhận
         </button>
@@ -26,7 +26,7 @@
           type="button"
           class="orders-filter-btn"
           :class="{ active: selectedStatus === 'confirmed' }"
-          @click="selectedStatus = 'confirmed'"
+          @click="handleChangeStatus('confirmed')"
         >
           Đã xác nhận
         </button>
@@ -35,7 +35,7 @@
           type="button"
           class="orders-filter-btn"
           :class="{ active: selectedStatus === 'shipping' }"
-          @click="selectedStatus = 'shipping'"
+          @click="handleChangeStatus('shipping')"
         >
           Đang giao
         </button>
@@ -44,7 +44,7 @@
           type="button"
           class="orders-filter-btn"
           :class="{ active: selectedStatus === 'completed' }"
-          @click="selectedStatus = 'completed'"
+          @click="handleChangeStatus('completed')"
         >
           Hoàn thành
         </button>
@@ -53,7 +53,7 @@
           type="button"
           class="orders-filter-btn"
           :class="{ active: selectedStatus === 'cancelled' }"
-          @click="selectedStatus = 'cancelled'"
+          @click="handleChangeStatus('cancelled')"
         >
           Đã hủy
         </button>
@@ -76,86 +76,94 @@
         </div>
       </div>
 
-      <div v-else class="orders-list">
-        <div
-          v-for="order in filteredOrders"
-          :key="order.id"
-          class="order-card"
-        >
-          <div class="order-top">
-            <div>
-              <p class="order-code">Mã đơn: #{{ order.id }}</p>
-              <p class="order-date">Ngày đặt: {{ formatDate(order.createdAt) }}</p>
-            </div>
-
-            <div class="order-status" :class="`status-${order.status}`">
-              {{ formatOrderStatus(order.status) }}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            class="toggle-customer-btn"
-            @click="toggleCustomerInfo(order.id)"
+      <div v-else>
+        <div class="orders-list">
+          <div
+            v-for="order in paginatedOrders"
+            :key="order.id"
+            class="order-card"
           >
-            {{ isCustomerInfoExpanded(order.id) ? 'Ẩn thông tin nhận hàng' : 'Xem thông tin nhận hàng' }}
-          </button>
-
-          <div v-if="isCustomerInfoExpanded(order.id)" class="order-customer">
-            <p><strong>Người nhận:</strong> {{ order.customerInfo?.fullName }}</p>
-            <p><strong>Số điện thoại:</strong> {{ order.customerInfo?.phone }}</p>
-            <p><strong>Thanh toán:</strong> {{ order.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản ngân hàng' }}</p>
-            <p>
-              <strong>Địa chỉ:</strong>
-              {{ order.customerInfo?.address }}, {{ order.customerInfo?.city }}
-            </p>
-            <p v-if="order.customerInfo?.note">
-              <strong>Ghi chú:</strong> {{ order.customerInfo.note }}
-            </p>
-          </div>
-
-          <div class="order-items">
-            <div
-              v-for="item in order.items"
-              :key="`${order.id}-${item.productId}-${item.size}`"
-              class="order-item"
-            >
-              <div class="order-item-left">
-                <img
-                  :src="require(`@/assets/sneakers/${item.image}`)"
-                  :alt="item.name"
-                  class="order-item-image"
-                />
-
-                <div>
-                  <p class="order-item-name">{{ item.name }}</p>
-                  <p class="order-item-meta">Size: {{ item.size }} × {{ item.quantity }}</p>
-                </div>
+            <div class="order-top">
+              <div>
+                <p class="order-code">Mã đơn: #{{ order.id }}</p>
+                <p class="order-date">Ngày đặt: {{ formatDate(order.createdAt) }}</p>
               </div>
 
-              <p class="order-item-price">
-                {{ formatPrice(item.price * item.quantity) }}
-              </p>
-            </div>
-          </div>
-
-          <div class="order-bottom">
-            <div class="order-summary">
-              <p>Tạm tính: <strong>{{ formatPrice(order.subtotal) }}</strong></p>
-              <p>Phí vận chuyển: <strong>{{ formatPrice(order.shippingFee) }}</strong></p>
-              <p class="order-total">Tổng cộng: <strong>{{ formatPrice(order.totalAmount) }}</strong></p>
+              <div class="order-status" :class="`status-${order.status}`">
+                {{ formatOrderStatus(order.status) }}
+              </div>
             </div>
 
             <button
-              v-if="order.status === 'pending'"
               type="button"
-              class="cancel-order-btn"
-              @click="openCancelModal(order)"
+              class="toggle-customer-btn"
+              @click="toggleCustomerInfo(order.id)"
             >
-              Hủy đơn
+              {{ isCustomerInfoExpanded(order.id) ? 'Ẩn thông tin nhận hàng' : 'Xem thông tin nhận hàng' }}
             </button>
+
+            <div v-if="isCustomerInfoExpanded(order.id)" class="order-customer">
+              <p><strong>Người nhận:</strong> {{ order.customerInfo?.fullName }}</p>
+              <p><strong>Số điện thoại:</strong> {{ order.customerInfo?.phone }}</p>
+              <p><strong>Thanh toán:</strong> {{ order.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản ngân hàng' }}</p>
+              <p>
+                <strong>Địa chỉ:</strong>
+                {{ order.customerInfo?.address }}, {{ order.customerInfo?.city }}
+              </p>
+              <p v-if="order.customerInfo?.note">
+                <strong>Ghi chú:</strong> {{ order.customerInfo.note }}
+              </p>
+            </div>
+
+            <div class="order-items">
+              <div
+                v-for="item in order.items"
+                :key="`${order.id}-${item.productId}-${item.size}`"
+                class="order-item"
+              >
+                <div class="order-item-left">
+                  <img
+                    :src="require(`@/assets/sneakers/${item.image}`)"
+                    :alt="item.name"
+                    class="order-item-image"
+                  />
+
+                  <div>
+                    <p class="order-item-name">{{ item.name }}</p>
+                    <p class="order-item-meta">Size: {{ item.size }} × {{ item.quantity }}</p>
+                  </div>
+                </div>
+
+                <p class="order-item-price">
+                  {{ formatPrice(item.price * item.quantity) }}
+                </p>
+              </div>
+            </div>
+
+            <div class="order-bottom">
+              <div class="order-summary">
+                <p>Tạm tính: <strong>{{ formatPrice(order.subtotal) }}</strong></p>
+                <p>Phí vận chuyển: <strong>{{ formatPrice(order.shippingFee) }}</strong></p>
+                <p class="order-total">Tổng cộng: <strong>{{ formatPrice(order.totalAmount) }}</strong></p>
+              </div>
+
+              <button
+                v-if="order.status === 'pending'"
+                type="button"
+                class="cancel-order-btn"
+                @click="openCancelModal(order)"
+              >
+                Hủy đơn
+              </button>
+            </div>
           </div>
         </div>
+
+        <BasePagination
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @change-page="handleChangePage"
+        />
       </div>
     </div>
 
@@ -176,6 +184,7 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
+import BasePagination from '@/components/common/BasePagination.vue'
 
 const expandedCustomerIds = ref([])
 const orders = ref([])
@@ -184,6 +193,8 @@ const showCancelModal = ref(false)
 const selectedOrder = ref(null)
 
 const selectedStatus = ref('all')
+const currentPage = ref(1)
+const itemsPerPage = 5
 
 const filteredOrders = computed(() => {
   if (selectedStatus.value === 'all') {
@@ -192,6 +203,20 @@ const filteredOrders = computed(() => {
 
   return orders.value.filter((order) => order.status === selectedStatus.value)
 })
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredOrders.value.length / itemsPerPage) || 1
+})
+
+const paginatedOrders = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredOrders.value.slice(start, end)
+})
+
+const handleChangePage = (page) => {
+  currentPage.value = page
+}
 
 const toggleCustomerInfo = (orderId) => {
   if (expandedCustomerIds.value.includes(orderId)) {
@@ -204,6 +229,11 @@ const toggleCustomerInfo = (orderId) => {
 
 const isCustomerInfoExpanded = (orderId) => {
   return expandedCustomerIds.value.includes(orderId)
+}
+
+const handleChangeStatus = (status) => {
+  selectedStatus.value = status
+  currentPage.value = 1
 }
 
 const formatPrice = (price) => {
