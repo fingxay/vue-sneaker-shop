@@ -4,9 +4,9 @@
       <h2 class="admin-logo">Admin Panel</h2>
 
       <nav class="admin-nav">
-        <router-link to="/admin">Dashboard</router-link>
-        <router-link to="/admin/products">Sản phẩm</router-link>
-        <router-link to="/admin/orders">Đơn hàng</router-link>
+        <router-link to="/admin" exact-active-class="active-link">Dashboard</router-link>
+        <router-link to="/admin/products" active-class="active-link">Sản phẩm</router-link>
+        <router-link to="/admin/orders" active-class="active-link">Đơn hàng</router-link>
         <router-link to="/">Về trang shop</router-link>
       </nav>
     </aside>
@@ -61,7 +61,7 @@
 }
 
 .admin-nav a:hover,
-.admin-nav a.router-link-active {
+.admin-nav a.active-link {
   background: #facc15;
   color: #111;
 }

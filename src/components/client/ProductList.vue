@@ -20,36 +20,11 @@
     </div>
   </div>
 
-  <div class="pagination" v-if="totalPages > 1">
-    <button
-      type="button"
-      class="page-btn"
-      :disabled="currentPage === 1"
-      @click="currentPage--"
-    >
-      Prev
-    </button>
-
-    <button
-      v-for="page in totalPages"
-      :key="page"
-      type="button"
-      class="page-btn"
-      :class="{ active: currentPage === page }"
-      @click="currentPage = page"
-    >
-      {{ page }}
-    </button>
-
-    <button
-      type="button"
-      class="page-btn"
-      :disabled="currentPage === totalPages"
-      @click="currentPage++"
-    >
-      Next
-    </button>
-  </div>
+  <BasePagination
+    :current-page="currentPage"
+    :total-pages="totalPages"
+    @change-page="currentPage = $event"
+  />
 </template>
 
 <script setup>
@@ -57,6 +32,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import ProductCard from './ProductCard.vue'
+import BasePagination from '@/components/common/BasePagination.vue'
 
 const route = useRoute()
 
@@ -192,44 +168,6 @@ const handleAddToCart = (cartItem) => {
   font-weight: 600;
   color: #666;
   background: #fafafa;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 30px;
-  flex-wrap: wrap;
-}
-
-.page-btn {
-  padding: 8px 14px;
-  border: 1px solid #ddd;
-  background: #fff;
-  color: #333;
-  cursor: pointer;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #111;
-  color: #fff;
-  border-color: #111;
-}
-
-.page-btn.active {
-  background: #111;
-  color: #fff;
-  border-color: #111;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 @media (max-width: 1200px) {

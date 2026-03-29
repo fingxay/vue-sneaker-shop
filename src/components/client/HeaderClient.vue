@@ -5,39 +5,21 @@
         <router-link to="/" class="logo">Sneaker Shop</router-link>
 
         <nav class="nav">
-          <div
-            class="nav-dropdown"
-            @mouseenter="showBrandMenu = true"
-            @mouseleave="showBrandMenu = false"
-          >
-            <router-link to="/" class="nav-link">Sản phẩm</router-link>
-
-            <div v-if="showBrandMenu" class="dropdown-menu">
-              <button
-                v-for="brand in brands"
-                :key="brand"
-                type="button"
-                class="dropdown-item"
-                @click="selectBrand(brand)"
-              >
-                {{ brand }}
-              </button>
-            </div>
-          </div>
+          <BaseBrandFilter
+            :brands="brands"
+            label="Sản phẩm"
+            @select="selectBrand"
+          />
         </nav>
       </div>
 
       <div class="header-center">
-        <div class="search-box">
-          <input
-            v-model="searchKeyword"
-            type="text"
-            placeholder="Tìm sản phẩm..."
-            class="search-input"
-            @keyup.enter="handleSearch"
-          />
-          <button type="button" class="search-btn" @click="handleSearch">Tìm</button>
-        </div>
+        <BaseSearchBox
+          v-model="searchKeyword"
+          placeholder="Tìm sản phẩm..."
+          button-text="Tìm"
+          @search="handleSearch"
+        />
       </div>
 
       <div class="header-right">
@@ -66,11 +48,12 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import BaseSearchBox from '@/components/common/BaseSearchBox.vue'
+import BaseBrandFilter from '@/components/common/BaseBrandFilter.vue'
 
 const router = useRouter()
 const route = useRoute()
 
-const showBrandMenu = ref(false)
 const searchKeyword = ref(route.query.q || '')
 const currentUser = ref(null)
 
@@ -91,8 +74,6 @@ onMounted(() => {
 })
 
 const selectBrand = (brand) => {
-  showBrandMenu.value = false
-
   const query = {
     ...route.query
   }
@@ -221,66 +202,6 @@ watch(
 
 .nav-link:hover {
   color: #facc15;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 180px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  padding: 8px 0;
-  overflow: hidden;
-}
-
-.dropdown-item {
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  background: white;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #111;
-  transition: 0.2s ease;
-}
-
-.dropdown-item:hover {
-  background: #f5f5f5;
-  color: #facc15;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  width: 100%;
-  max-width: 420px;
-}
-
-.search-input {
-  flex: 1;
-  height: 42px;
-  border: none;
-  outline: none;
-  padding: 0 14px;
-  font-size: 14px;
-}
-
-.search-btn {
-  height: 42px;
-  border: none;
-  background: #facc15;
-  color: #111;
-  font-weight: 600;
-  padding: 0 18px;
-  cursor: pointer;
 }
 
 .login-btn {
