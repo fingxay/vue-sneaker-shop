@@ -87,7 +87,8 @@
       "shippingFee": 0,
       "totalAmount": 890000,
       "status": "pending",
-      "createdAt": "2026-03-26T09:03:07.329Z"
+      "createdAt": "2026-03-26T09:03:07.329Z",
+      "completedAt": null
     },
     {
       "id": "de1e",
@@ -167,8 +168,9 @@
       "subtotal": 720000,
       "shippingFee": 30000,
       "totalAmount": 750000,
-      "status": "pending",
-      "createdAt": "2026-03-26T15:09:54.024Z"
+      "status": "completed",
+      "createdAt": "2026-03-26T15:09:54.024Z",
+      "completedAt": "2026-03-31T12:54:11.302Z"
     },
     {
       "id": "966f",
@@ -572,8 +574,9 @@
       "subtotal": 720000,
       "shippingFee": 30000,
       "totalAmount": 750000,
-      "status": "pending",
-      "createdAt": "2026-03-29T19:46:00.575Z"
+      "status": "completed",
+      "createdAt": "2026-03-29T19:46:00.575Z",
+      "completedAt": "2026-03-31T12:54:11.841Z"
     }
   ],
   "users": [

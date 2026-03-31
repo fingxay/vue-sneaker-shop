@@ -79,6 +79,9 @@
             <div>
               <p class="admin-order-code">Mã đơn: #{{ order.id }}</p>
               <p class="admin-order-date">Ngày đặt: {{ formatDate(order.createdAt) }}</p>
+              <p v-if="order.completedAt" class="admin-order-date">
+                Hoàn thành lúc: {{ formatDate(order.completedAt) }}
+              </p>
               <p class="admin-order-user">User ID: {{ order.userId }}</p>
             </div>
 
@@ -190,15 +193,28 @@ const handleChangeStatus = (status) => {
 
 const handleStatusChange = async (order) => {
   try {
-    await axios.patch(`http://localhost:3000/orders/${order.id}`, {
-    status: order.tempStatus
-  })
+    const patchData = {
+      status: order.tempStatus
+    }
 
-  order.status = order.tempStatus
-  saveSuccessMessage.value = `Đã lưu trạng thái đơn #${order.id} thành công`
-  setTimeout(() => {
-    saveSuccessMessage.value = ''
-  }, 3000)
+    if (order.tempStatus === 'completed' && order.status !== 'completed') {
+      patchData.completedAt = new Date().toISOString()
+    }
+
+    if (order.tempStatus !== 'completed') {
+      patchData.completedAt = null
+    }
+
+    await axios.patch(`http://localhost:3000/orders/${order.id}`, patchData)
+
+    order.status = order.tempStatus
+    order.completedAt = patchData.completedAt ?? order.completedAt
+
+    saveSuccessMessage.value = `Đã lưu trạng thái đơn #${order.id} thành công`
+
+    setTimeout(() => {
+      saveSuccessMessage.value = ''
+    }, 3000)
   } catch (error) {
     console.error(error)
   }
