@@ -8,7 +8,12 @@
         <router-link to="/admin/products" active-class="active-link">Sản phẩm</router-link>
         <router-link to="/admin/orders" active-class="active-link">Đơn hàng</router-link>
         <router-link to="/admin/users" active-class="active-link">Người dùng</router-link>
+        <router-link to="/admin/revenue" active-class="active-link">Doanh thu</router-link>
         <router-link to="/">Về trang shop</router-link>
+
+        <button type="button" class="admin-logout-btn" @click="handleLogout">
+          Đăng xuất
+        </button>
       </nav>
     </aside>
 
@@ -23,6 +28,14 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const handleLogout = () => {
+  localStorage.removeItem('currentUser')
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -33,11 +46,20 @@
 }
 
 .admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 270px;
+  height: 100vh;
+  overflow-y: auto;
   width: 240px;
   background: #111827;
   color: white;
   padding: 24px 16px;
   flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-logo {
@@ -47,9 +69,37 @@
 }
 
 .admin-nav {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.admin-logout-btn {
+  margin-top: auto;
+}
+
+.admin-nav-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-logout-btn {
+  width: 100%;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-logout-btn:hover {
+  background: #dc2626;
 }
 
 .admin-nav a {
@@ -69,6 +119,7 @@
 
 .admin-main {
   flex: 1;
+  margin-left: 240px;
   padding: 24px;
 }
 

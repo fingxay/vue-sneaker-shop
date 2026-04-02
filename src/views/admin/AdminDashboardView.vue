@@ -16,7 +16,7 @@
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card primary-card">
+      <div class="stat-card dashboard-link-card" @click="goToAdminPage('/admin/products')">
         <div class="stat-card-top">
           <p class="stat-label">Tổng sản phẩm</p>
           <span class="stat-icon">📦</span>
@@ -25,7 +25,7 @@
         <p class="stat-note">Tất cả sản phẩm trong hệ thống</p>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card dashboard-link-card" @click="goToAdminPage('/admin/products')">
         <div class="stat-card-top">
           <p class="stat-label">Đang hiển thị</p>
           <span class="stat-icon">👟</span>
@@ -34,7 +34,7 @@
         <p class="stat-note">Sản phẩm đang được mở bán</p>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card dashboard-link-card" @click="goToAdminPage('/admin/orders')">
         <div class="stat-card-top">
           <p class="stat-label">Tổng đơn hàng</p>
           <span class="stat-icon">🧾</span>
@@ -43,7 +43,7 @@
         <p class="stat-note">Số đơn đã được tạo</p>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card dashboard-link-card" @click="goToAdminPage('/admin/users')">
         <div class="stat-card-top">
           <p class="stat-label">Người dùng</p>
           <span class="stat-icon">👤</span>
@@ -52,7 +52,7 @@
         <p class="stat-note">Không tính tài khoản admin</p>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card dashboard-link-card" @click="goToAdminPage('/admin/revenue')">
         <div class="stat-card-top">
           <p class="stat-label">Doanh thu</p>
           <span class="stat-icon">💰</span>
@@ -123,6 +123,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import {
   Chart as ChartJS,
@@ -145,6 +146,8 @@ ChartJS.register(
   LinearScale,
   BarElement
 )
+
+const router = useRouter()
 
 const products = ref([])
 const orders = ref([])
@@ -175,6 +178,10 @@ const totalRevenue = computed(() => {
 
 const formatPrice = (value) => {
   return new Intl.NumberFormat('vi-VN').format(value || 0) + 'đ'
+}
+
+const goToAdminPage = (path) => {
+  router.push(path)
 }
 
 const formatDateKey = (dateString) => {
@@ -499,15 +506,22 @@ onMounted(() => {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
-.primary-card {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: none;
+.dashboard-link-card {
+  cursor: pointer;
+  transition: all 0.22s ease;
 }
 
-.primary-card .stat-label,
-.primary-card .stat-note,
-.primary-card .stat-value,
-.primary-card .stat-icon {
+.dashboard-link-card:hover {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
+}
+
+.dashboard-link-card:hover .stat-label,
+.dashboard-link-card:hover .stat-note,
+.dashboard-link-card:hover .stat-value,
+.dashboard-link-card:hover .stat-icon {
   color: #ffffff;
 }
 

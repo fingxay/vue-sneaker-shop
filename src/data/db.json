@@ -577,6 +577,604 @@
       "status": "completed",
       "createdAt": "2026-03-29T19:46:00.575Z",
       "completedAt": "2026-03-31T12:54:11.841Z"
+    },
+    {
+      "id": "R1001",
+      "userId": "1",
+      "customerInfo": {
+        "fullName": "Nguyen Van A",
+        "phone": "0987654321",
+        "address": "312 rgr",
+        "city": "hcm",
+        "note": "Giao giờ hành chính"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "5",
+          "name": "Nike Jordan 1 Low Trắng Đen Gót Oliu REP 1:1",
+          "image": "sneaker5.jpg",
+          "price": 610000,
+          "size": "39",
+          "quantity": 1
+        },
+        {
+          "productId": "12",
+          "name": "Adidas Samba OG Trắng Kẻ Đen Mũi Da Lộn REP 1:1",
+          "image": "sneaker12.jpg",
+          "price": 560000,
+          "size": "41",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1170000,
+      "shippingFee": 30000,
+      "totalAmount": 1200000,
+      "status": "completed",
+      "createdAt": "2026-04-01T02:15:00.000Z",
+      "completedAt": "2026-04-02T08:40:00.000Z"
+    },
+    {
+      "id": "R1002",
+      "userId": "4fb2",
+      "customerInfo": {
+        "fullName": "aa",
+        "phone": "0987654321",
+        "address": "123 acb",
+        "city": "Hà nội",
+        "note": "Gọi trước khi giao"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "10",
+          "name": "New Balance 530 Kem REP 1:1",
+          "image": "sneaker10.jpg",
+          "price": 740000,
+          "size": "38",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 740000,
+      "shippingFee": 30000,
+      "totalAmount": 770000,
+      "status": "completed",
+      "createdAt": "2026-04-03T03:20:00.000Z",
+      "completedAt": "2026-04-05T10:15:00.000Z"
+    },
+    {
+      "id": "R1003",
+      "userId": "ed8b",
+      "customerInfo": {
+        "fullName": "b",
+        "phone": "0912345678",
+        "address": "45 Nguyễn Trãi",
+        "city": "Đà Nẵng",
+        "note": ""
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "20",
+          "name": "Giày Adidas Forum 84 Trắng Đen REP 1:1",
+          "image": "sneaker20.jpg",
+          "price": 650000,
+          "size": "40",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1300000,
+      "shippingFee": 30000,
+      "totalAmount": 1330000,
+      "status": "shipping",
+      "createdAt": "2026-04-06T01:10:00.000Z"
+    },
+    {
+      "id": "R1004",
+      "userId": "7bcf",
+      "customerInfo": {
+        "fullName": "c",
+        "phone": "0933555777",
+        "address": "22 Lê Lợi",
+        "city": "Huế",
+        "note": "Giao buổi chiều"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "23",
+          "name": "Adidas Samba OG Kem Xám Mũi Da Lộn REP 1:1",
+          "image": "sneaker23.jpg",
+          "price": 540000,
+          "size": "37",
+          "quantity": 1
+        },
+        {
+          "productId": "6",
+          "name": "Vans Vault Old Skool Đen Trắng REP 1:1",
+          "image": "sneaker6.jpg",
+          "price": 450000,
+          "size": "39",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 990000,
+      "shippingFee": 30000,
+      "totalAmount": 1020000,
+      "status": "pending",
+      "createdAt": "2026-04-07T06:45:00.000Z"
+    },
+    {
+      "id": "R1005",
+      "userId": "f4c0",
+      "customerInfo": {
+        "fullName": "h",
+        "phone": "0977888999",
+        "address": "18 Trần Phú",
+        "city": "Hải Phòng",
+        "note": "Ship nhanh giúp"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "18",
+          "name": "Nike Air Force 1 Year Of The Horse Trắng Kem REP 1:1",
+          "image": "sneaker18.jpg",
+          "price": 910000,
+          "size": "42",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 910000,
+      "shippingFee": 30000,
+      "totalAmount": 940000,
+      "status": "completed",
+      "createdAt": "2026-04-08T04:30:00.000Z",
+      "completedAt": "2026-04-10T09:25:00.000Z"
+    },
+    {
+      "id": "R1006",
+      "userId": "1",
+      "customerInfo": {
+        "fullName": "Nguyen Van A",
+        "phone": "0987654321",
+        "address": "312 rgr",
+        "city": "hcm",
+        "note": ""
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "26",
+          "name": "Nike Air Force 1 07 LV Kem Xám Đỏ REP 1:1",
+          "image": "sneaker26.jpg",
+          "price": 950000,
+          "size": "39",
+          "quantity": 1
+        },
+        {
+          "productId": "9",
+          "name": "Adidas Alphabounce Beyond Kem Tím REP 1:1",
+          "image": "sneaker9.jpg",
+          "price": 590000,
+          "size": "41",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1540000,
+      "shippingFee": 30000,
+      "totalAmount": 1570000,
+      "status": "cancelled",
+      "createdAt": "2026-04-09T07:10:00.000Z"
+    },
+    {
+      "id": "R1007",
+      "userId": "4fb2",
+      "customerInfo": {
+        "fullName": "aa",
+        "phone": "0987654321",
+        "address": "123 acb",
+        "city": "Hà nội",
+        "note": "Không giao sáng"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "15",
+          "name": "Nike Jordan 1 Low Xanh Dương Xám REP 1:1",
+          "image": "sneaker15.jpg",
+          "price": 620000,
+          "size": "40",
+          "quantity": 2
+        }
+      ],
+      "subtotal": 1240000,
+      "shippingFee": 30000,
+      "totalAmount": 1270000,
+      "status": "confirmed",
+      "createdAt": "2026-04-11T03:00:00.000Z"
+    },
+    {
+      "id": "R1008",
+      "userId": "ed8b",
+      "customerInfo": {
+        "fullName": "b",
+        "phone": "0912345678",
+        "address": "45 Nguyễn Trãi",
+        "city": "Đà Nẵng",
+        "note": ""
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "21",
+          "name": "Nike Air Jordan 1 Low Paris REP 1:1",
+          "image": "sneaker21.jpg",
+          "price": 860000,
+          "size": "38",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 860000,
+      "shippingFee": 30000,
+      "totalAmount": 890000,
+      "status": "completed",
+      "createdAt": "2026-04-12T05:00:00.000Z",
+      "completedAt": "2026-04-13T11:00:00.000Z"
+    },
+    {
+      "id": "R1009",
+      "userId": "7bcf",
+      "customerInfo": {
+        "fullName": "c",
+        "phone": "0933555777",
+        "address": "22 Lê Lợi",
+        "city": "Huế",
+        "note": "Nhận tại quầy bảo vệ"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "16",
+          "name": "Giày Puma Court Classic Vulc FS Kem Gót Mận REP 1:1",
+          "image": "sneaker16.jpg",
+          "price": 480000,
+          "size": "39",
+          "quantity": 1
+        },
+        {
+          "productId": "19",
+          "name": "Adidas Alphabounce Beyond Full Trắng REP 1:1",
+          "image": "sneaker19.jpg",
+          "price": 600000,
+          "size": "40",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1080000,
+      "shippingFee": 30000,
+      "totalAmount": 1110000,
+      "status": "completed",
+      "createdAt": "2026-04-14T02:25:00.000Z",
+      "completedAt": "2026-04-16T08:55:00.000Z"
+    },
+    {
+      "id": "R1010",
+      "userId": "f4c0",
+      "customerInfo": {
+        "fullName": "h",
+        "phone": "0977888999",
+        "address": "18 Trần Phú",
+        "city": "Hải Phòng",
+        "note": ""
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "17",
+          "name": "Nike Air Jordan 1 Low Đính Đá Trắng Đen Xám REP 1:1",
+          "image": "sneaker17.jpg",
+          "price": 830000,
+          "size": "37",
+          "quantity": 1
+        },
+        {
+          "productId": "25",
+          "name": "Giày Adidas Forum 84 Trắng Kem REP 1:1",
+          "image": "sneaker25.jpg",
+          "price": 580000,
+          "size": "38",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1410000,
+      "shippingFee": 30000,
+      "totalAmount": 1440000,
+      "status": "completed",
+      "createdAt": "2026-04-18T01:40:00.000Z",
+      "completedAt": "2026-04-20T07:30:00.000Z"
+    },
+    {
+      "id": "R1011",
+      "userId": "1",
+      "customerInfo": {
+        "fullName": "Nguyen Van A",
+        "phone": "0987654321",
+        "address": "312 rgr",
+        "city": "hcm",
+        "note": "Giao trước 5h"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "27",
+          "name": "Giày Nike SB Force 58 Xám Đỏ REP 1:1",
+          "image": "sneaker27.jpg",
+          "price": 630000,
+          "size": "41",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 630000,
+      "shippingFee": 30000,
+      "totalAmount": 660000,
+      "status": "shipping",
+      "createdAt": "2026-04-21T04:15:00.000Z"
+    },
+    {
+      "id": "R1012",
+      "userId": "4fb2",
+      "customerInfo": {
+        "fullName": "aa",
+        "phone": "0987654321",
+        "address": "123 acb",
+        "city": "Hà nội",
+        "note": "Để ở lễ tân"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "11",
+          "name": "MLB Chunky Liner NY Saffiano Trắng Xám REP 1:1",
+          "image": "sneaker11.jpg",
+          "price": 690000,
+          "size": "40",
+          "quantity": 1
+        },
+        {
+          "productId": "14",
+          "name": "MLB Chunky Liner NY Saffiano Trắng Navy REP 1:1",
+          "image": "sneaker14.jpg",
+          "price": 670000,
+          "size": "39",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1360000,
+      "shippingFee": 30000,
+      "totalAmount": 1390000,
+      "status": "completed",
+      "createdAt": "2026-04-22T06:20:00.000Z",
+      "completedAt": "2026-04-24T13:10:00.000Z"
+    },
+    {
+      "id": "Y2401",
+      "userId": "1",
+      "customerInfo": {
+        "fullName": "Nguyen Van A",
+        "phone": "0987654321",
+        "address": "312 rgr",
+        "city": "hcm",
+        "note": "Đơn test năm 2024"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "12",
+          "name": "Adidas Samba OG Trắng Kẻ Đen Mũi Da Lộn REP 1:1",
+          "image": "sneaker12.jpg",
+          "price": 560000,
+          "size": "40",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 560000,
+      "shippingFee": 30000,
+      "totalAmount": 590000,
+      "status": "completed",
+      "createdAt": "2024-02-12T03:20:00.000Z",
+      "completedAt": "2024-02-14T09:15:00.000Z"
+    },
+    {
+      "id": "Y2402",
+      "userId": "4fb2",
+      "customerInfo": {
+        "fullName": "aa",
+        "phone": "0987654321",
+        "address": "123 acb",
+        "city": "Hà nội",
+        "note": "Đơn test năm 2024"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "5",
+          "name": "Nike Jordan 1 Low Trắng Đen Gót Oliu REP 1:1",
+          "image": "sneaker5.jpg",
+          "price": 610000,
+          "size": "39",
+          "quantity": 1
+        },
+        {
+          "productId": "6",
+          "name": "Vans Vault Old Skool Đen Trắng REP 1:1",
+          "image": "sneaker6.jpg",
+          "price": 450000,
+          "size": "38",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1060000,
+      "shippingFee": 30000,
+      "totalAmount": 1090000,
+      "status": "completed",
+      "createdAt": "2024-07-05T05:40:00.000Z",
+      "completedAt": "2024-07-08T11:25:00.000Z"
+    },
+    {
+      "id": "Y2501",
+      "userId": "ed8b",
+      "customerInfo": {
+        "fullName": "b",
+        "phone": "0912345678",
+        "address": "45 Nguyễn Trãi",
+        "city": "Đà Nẵng",
+        "note": "Đơn test năm 2025"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "20",
+          "name": "Giày Adidas Forum 84 Trắng Đen REP 1:1",
+          "image": "sneaker20.jpg",
+          "price": 650000,
+          "size": "41",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 650000,
+      "shippingFee": 30000,
+      "totalAmount": 680000,
+      "status": "completed",
+      "createdAt": "2025-01-18T02:10:00.000Z",
+      "completedAt": "2025-01-20T08:00:00.000Z"
+    },
+    {
+      "id": "Y2502",
+      "userId": "7bcf",
+      "customerInfo": {
+        "fullName": "c",
+        "phone": "0933555777",
+        "address": "22 Lê Lợi",
+        "city": "Huế",
+        "note": "Đơn test năm 2025"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "21",
+          "name": "Nike Air Jordan 1 Low Paris REP 1:1",
+          "image": "sneaker21.jpg",
+          "price": 860000,
+          "size": "38",
+          "quantity": 1
+        },
+        {
+          "productId": "16",
+          "name": "Giày Puma Court Classic Vulc FS Kem Gót Mận REP 1:1",
+          "image": "sneaker16.jpg",
+          "price": 480000,
+          "size": "39",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1340000,
+      "shippingFee": 30000,
+      "totalAmount": 1370000,
+      "status": "completed",
+      "createdAt": "2025-09-09T06:30:00.000Z",
+      "completedAt": "2025-09-12T10:45:00.000Z"
+    },
+    {
+      "id": "Y2701",
+      "userId": "f4c0",
+      "customerInfo": {
+        "fullName": "h",
+        "phone": "0977888999",
+        "address": "18 Trần Phú",
+        "city": "Hải Phòng",
+        "note": "Đơn test năm 2027"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "18",
+          "name": "Nike Air Force 1 Year Of The Horse Trắng Kem REP 1:1",
+          "image": "sneaker18.jpg",
+          "price": 910000,
+          "size": "42",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 910000,
+      "shippingFee": 30000,
+      "totalAmount": 940000,
+      "status": "completed",
+      "createdAt": "2027-03-11T04:00:00.000Z",
+      "completedAt": "2027-03-13T09:35:00.000Z"
+    },
+    {
+      "id": "Y2702",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "Đơn test năm 2027"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "26",
+          "name": "Nike Air Force 1 07 LV Kem Xám Đỏ REP 1:1",
+          "image": "sneaker26.jpg",
+          "price": 950000,
+          "size": "39",
+          "quantity": 1
+        },
+        {
+          "productId": "11",
+          "name": "MLB Chunky Liner NY Saffiano Trắng Xám REP 1:1",
+          "image": "sneaker11.jpg",
+          "price": 690000,
+          "size": "40",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1640000,
+      "shippingFee": 30000,
+      "totalAmount": 1670000,
+      "status": "completed",
+      "createdAt": "2027-11-21T01:50:00.000Z",
+      "completedAt": "2027-11-24T07:20:00.000Z"
+    },
+    {
+      "id": "5141",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "3",
+          "name": "MLB Chunky Liner NY Embo Monogram Trắng REP 1:1",
+          "image": "sneaker3.jpg",
+          "price": 720000,
+          "size": "38",
+          "quantity": 4
+        }
+      ],
+      "subtotal": 2880000,
+      "shippingFee": 0,
+      "totalAmount": 2880000,
+      "status": "pending",
+      "createdAt": "2026-04-02T12:01:42.129Z"
     }
   ],
   "users": [
@@ -616,13 +1214,13 @@
       "cart": {
         "items": [
           {
-            "productId": "3",
+            "productId": "4",
             "size": "38",
-            "quantity": 4,
-            "addedAt": "2026-03-29T21:19:08.755Z"
+            "quantity": 1,
+            "addedAt": "2026-04-02T12:01:51.977Z"
           }
         ],
-        "updatedAt": "2026-03-29T21:19:09.251Z"
+        "updatedAt": "2026-04-02T12:01:59.379Z"
       },
       "shippingInfo": {
         "fullName": "Admin",
@@ -818,7 +1416,7 @@
         {
           "id": 3,
           "size": "38",
-          "quantity": 4
+          "quantity": 0
         },
         {
           "id": 4,

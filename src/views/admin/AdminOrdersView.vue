@@ -60,12 +60,21 @@
       </button>
     </div>
 
+    <div class="admin-order-search">
+      <BaseSearchBox
+        v-model="searchKeyword"
+        placeholder="Tìm theo mã đơn..."
+        buttonText="Tìm"
+        @search="handleSearchOrder"
+      />
+    </div>
+
     <div v-if="loading" class="admin-empty-state">
       Đang tải đơn hàng...
     </div>
 
-    <div v-else-if="!orders.length" class="admin-empty-state">
-      Chưa có đơn hàng nào
+    <div v-else-if="!filteredOrders.length" class="admin-empty-state">
+      {{ appliedSearchKeyword ? 'Không tìm thấy mã đơn phù hợp' : 'Chưa có đơn hàng nào' }}
     </div>
 
     <div v-else>
@@ -160,6 +169,7 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import BasePagination from '@/components/common/BasePagination.vue'
+import BaseSearchBox from '@/components/common/BaseSearchBox.vue'
 
 const orders = ref([])
 const loading = ref(false)
@@ -167,13 +177,25 @@ const selectedStatus = ref('all')
 const currentPage = ref(1)
 const itemsPerPage = 5
 const saveSuccessMessage = ref('')
+const searchKeyword = ref('')
+const appliedSearchKeyword = ref('')
 
 const filteredOrders = computed(() => {
-  if (selectedStatus.value === 'all') {
-    return orders.value
+  let result = orders.value
+
+  if (selectedStatus.value !== 'all') {
+    result = result.filter((order) => order.status === selectedStatus.value)
   }
 
-  return orders.value.filter((order) => order.status === selectedStatus.value)
+  if (appliedSearchKeyword.value.trim()) {
+    const keyword = appliedSearchKeyword.value.trim().toLowerCase()
+
+    result = result.filter((order) =>
+      String(order.id).toLowerCase().includes(keyword)
+    )
+  }
+
+  return result
 })
 
 const totalPages = computed(() => {
@@ -189,6 +211,15 @@ const paginatedOrders = computed(() => {
 const handleChangeStatus = (status) => {
   selectedStatus.value = status
   currentPage.value = 1
+}
+
+const handleSearchOrder = () => {
+  appliedSearchKeyword.value = searchKeyword.value
+  currentPage.value = 1
+}
+
+const handleChangePage = (page) => {
+  currentPage.value = page
 }
 
 const handleStatusChange = async (order) => {
@@ -346,6 +377,10 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-order-search {
   margin-bottom: 24px;
 }
 

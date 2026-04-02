@@ -13,6 +13,7 @@ import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminProductsView from '@/views/admin/AdminProductsView.vue'
 import AdminOrdersView from '@/views/admin/AdminOrdersView.vue'
 import AdminUsersView from '@/views/admin/AdminUsersView.vue'
+import AdminRevenueView from '@/views/admin/AdminRevenueView.vue'
 
 const routes = [
   {
@@ -96,6 +97,11 @@ const routes = [
         path: 'users',
         name: 'admin-users',
         component: AdminUsersView
+      },
+      {
+        path: 'revenue',
+        name: 'admin-revenue',
+        component: AdminRevenueView
       }
     ]
   }
