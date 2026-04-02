@@ -131,6 +131,7 @@ const handleRegister = async () => {
       email: email.value.trim(),
       password: password.value,
       role: 'user',
+      isActive: true,
       cart: {
         items: [],
         updatedAt: new Date().toISOString()

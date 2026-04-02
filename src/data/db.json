@@ -586,6 +586,7 @@
       "email": "vana@gmail.com",
       "password": "123456",
       "role": "user",
+      "isActive": true,
       "shippingInfo": {
         "fullName": "Nguyen Van A",
         "phone": "0987654321",
@@ -611,6 +612,7 @@
       "email": "admin@gmail.com",
       "password": "admin123",
       "role": "admin",
+      "isActive": true,
       "cart": {
         "items": [
           {
@@ -636,6 +638,7 @@
       "email": "a@gmail.com",
       "password": "123456",
       "role": "user",
+      "isActive": true,
       "cart": {
         "items": [],
         "updatedAt": "2026-03-26T09:03:48.595Z"
@@ -646,6 +649,42 @@
         "address": "123 acb",
         "city": "Hà nội",
         "note": "nhanh lên điiiiii"
+      }
+    },
+    {
+      "id": "ed8b",
+      "name": "b",
+      "email": "b@gmail.com",
+      "password": "123456",
+      "role": "user",
+      "cart": {
+        "items": [],
+        "updatedAt": "2026-04-02T06:59:12.426Z"
+      },
+      "isActive": true
+    },
+    {
+      "id": "7bcf",
+      "name": "c",
+      "email": "c@gmail.com",
+      "password": "123456",
+      "role": "user",
+      "cart": {
+        "items": [],
+        "updatedAt": "2026-04-02T06:59:19.290Z"
+      },
+      "isActive": true
+    },
+    {
+      "id": "f4c0",
+      "name": "h",
+      "email": "h@gmail.com",
+      "password": "123456",
+      "role": "user",
+      "isActive": true,
+      "cart": {
+        "items": [],
+        "updatedAt": "2026-04-02T07:12:41.254Z"
       }
     }
   ],

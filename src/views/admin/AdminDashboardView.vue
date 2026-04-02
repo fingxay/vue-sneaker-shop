@@ -80,7 +80,36 @@
         <div class="panel-header">
           <div>
             <p class="panel-kicker">Revenue Analytics</p>
-            <h3 class="panel-title">Doanh thu 7 ngày gần nhất</h3>
+            <h3 class="panel-title">{{ revenueChartTitle }}</h3>
+          </div>
+
+          <div class="revenue-range-tabs">
+            <button
+              type="button"
+              class="range-tab-btn"
+              :class="{ active: revenueRange === '7days' }"
+              @click="revenueRange = '7days'"
+            >
+              7 ngày
+            </button>
+
+            <button
+              type="button"
+              class="range-tab-btn"
+              :class="{ active: revenueRange === '30days' }"
+              @click="revenueRange = '30days'"
+            >
+              30 ngày
+            </button>
+
+            <button
+              type="button"
+              class="range-tab-btn"
+              :class="{ active: revenueRange === '12months' }"
+              @click="revenueRange = '12months'"
+            >
+              12 tháng
+            </button>
           </div>
         </div>
 
@@ -120,6 +149,7 @@ ChartJS.register(
 const products = ref([])
 const orders = ref([])
 const users = ref([])
+const revenueRange = ref('7days')
 
 const totalProducts = computed(() => products.value.length)
 
@@ -161,6 +191,18 @@ const formatDayLabel = (date) => {
   ).padStart(2, '0')}`
 }
 
+const revenueChartTitle = computed(() => {
+  if (revenueRange.value === '30days') {
+    return 'Doanh thu 30 ngày gần nhất'
+  }
+
+  if (revenueRange.value === '12months') {
+    return 'Doanh thu 12 tháng gần nhất'
+  }
+
+  return 'Doanh thu 7 ngày gần nhất'
+})
+
 const pendingOrders = computed(() =>
   orders.value.filter((order) => order.status === 'pending').length
 )
@@ -181,26 +223,64 @@ const cancelledOrders = computed(() =>
   orders.value.filter((order) => order.status === 'cancelled').length
 )
 
-const dailyRevenue7Days = computed(() => {
+const formatMonthKey = (dateString) => {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  return `${year}-${month}`
+}
+
+const revenueChartSource = computed(() => {
+  if (revenueRange.value === '12months') {
+    const today = new Date()
+    const months = Array.from({ length: 12 }, (_, index) => {
+      const date = new Date(today.getFullYear(), today.getMonth() - (11 - index), 1)
+      return date
+    })
+
+    const revenueMap = {}
+
+    months.forEach((date) => {
+      revenueMap[formatMonthKey(date)] = 0
+    })
+
+    orders.value.forEach((order) => {
+      if (order.status !== 'completed' || !order.completedAt) return
+
+      const monthKey = formatMonthKey(order.completedAt)
+
+      if (monthKey in revenueMap) {
+        revenueMap[monthKey] += order.totalAmount || 0
+      }
+    })
+
+    return {
+      labels: months.map((date) => `T${date.getMonth() + 1}`),
+      values: months.map((date) => revenueMap[formatMonthKey(date)])
+    }
+  }
+
+  const totalDays = revenueRange.value === '30days' ? 30 : 7
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const last7Days = Array.from({ length: 7 }, (_, index) => {
+  const days = Array.from({ length: totalDays }, (_, index) => {
     const date = new Date(today)
-    date.setDate(today.getDate() - (6 - index))
+    date.setDate(today.getDate() - (totalDays - 1 - index))
     return date
   })
 
   const revenueMap = {}
 
-  last7Days.forEach((date) => {
+  days.forEach((date) => {
     revenueMap[formatDateKey(date)] = 0
   })
 
   orders.value.forEach((order) => {
     if (order.status !== 'completed' || !order.completedAt) return
 
-  const dateKey = formatDateKey(order.completedAt)
+    const dateKey = formatDateKey(order.completedAt)
 
     if (dateKey in revenueMap) {
       revenueMap[dateKey] += order.totalAmount || 0
@@ -208,8 +288,8 @@ const dailyRevenue7Days = computed(() => {
   })
 
   return {
-    labels: last7Days.map((date) => formatDayLabel(date)),
-    values: last7Days.map((date) => revenueMap[formatDateKey(date)])
+    labels: days.map((date) => formatDayLabel(date)),
+    values: days.map((date) => revenueMap[formatDateKey(date)])
   }
 })
 
@@ -272,14 +352,14 @@ const doughnutChartOptions = computed(() => ({
 }))
 
 const overviewChartData = computed(() => ({
-  labels: dailyRevenue7Days.value.labels,
+  labels: revenueChartSource.value.labels,
   datasets: [
     {
       label: 'Doanh thu',
-      data: dailyRevenue7Days.value.values,
+      data: revenueChartSource.value.values,
       backgroundColor: '#22c55e',
       borderRadius: 10,
-      maxBarThickness: 46
+      maxBarThickness: revenueRange.value === '12months' ? 42 : 28
     }
   ]
 }))
@@ -630,6 +710,57 @@ onMounted(() => {
   .doughnut-box,
   .bar-box {
     height: 300px;
+  }
+}
+
+.revenue-range-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+}
+
+.range-tab-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.range-tab-btn:hover {
+  color: #0f172a;
+}
+
+.range-tab-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .revenue-range-tabs {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 16px;
+  }
+
+  .range-tab-btn {
+    flex: 1 1 auto;
+    text-align: center;
   }
 }
 </style>

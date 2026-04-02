@@ -12,6 +12,7 @@ import ClientLayout from '@/layouts/ClientLayout.vue'
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminProductsView from '@/views/admin/AdminProductsView.vue'
 import AdminOrdersView from '@/views/admin/AdminOrdersView.vue'
+import AdminUsersView from '@/views/admin/AdminUsersView.vue'
 
 const routes = [
   {
@@ -90,6 +91,11 @@ const routes = [
         path: 'orders',
         name: 'admin-orders',
         component: AdminOrdersView
+      },
+      {
+        path: 'users',
+        name: 'admin-users',
+        component: AdminUsersView
       }
     ]
   }

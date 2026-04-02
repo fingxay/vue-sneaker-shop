@@ -7,6 +7,7 @@
         <router-link to="/admin" exact-active-class="active-link">Dashboard</router-link>
         <router-link to="/admin/products" active-class="active-link">Sản phẩm</router-link>
         <router-link to="/admin/orders" active-class="active-link">Đơn hàng</router-link>
+        <router-link to="/admin/users" active-class="active-link">Người dùng</router-link>
         <router-link to="/">Về trang shop</router-link>
       </nav>
     </aside>
