@@ -1,94 +1,350 @@
 # Vue Sneaker Shop
 
-Ứng dụng bán giày sneaker xây bằng Vue 3 theo mô hình client-side, dùng `json-server` làm mock API cho sản phẩm, tài khoản, giỏ hàng và đơn hàng. Dự án phục vụ các chức năng cơ bản của một website thương mại điện tử như đăng ký, đăng nhập, xem sản phẩm, thêm vào giỏ, thanh toán và theo dõi hóa đơn.
+Ứng dụng bán giày sneaker xây dựng bằng Vue 3 theo mô hình SPA, sử dụng `json-server` làm mock API. Project mô phỏng tương đối đầy đủ một hệ thống thương mại điện tử nhỏ với hai khu vực chính:
 
-## Mục tiêu bài làm
+- Client shop: xem sản phẩm, tìm kiếm, lọc brand, thêm vào giỏ, thanh toán, theo dõi đơn hàng.
+- Admin panel: quản lý sản phẩm, đơn hàng, người dùng, doanh thu và xuất báo cáo PDF.
 
-- Xây dựng giao diện bán hàng với Vue 3 và Vue Router.
-- Làm việc với dữ liệu giả lập thông qua `json-server`.
-- Quản lý luồng mua hàng từ xem sản phẩm đến đặt đơn.
-- Thực hành validation form, route guard và lưu trạng thái đăng nhập bằng `localStorage`.
+## Tổng quan dự án
+
+Project hiện tại có:
+
+- 27 sản phẩm trong dữ liệu mẫu.
+- 6 tài khoản người dùng trong mock database, gồm cả admin.
+- Nhiều đơn hàng mẫu với nhiều trạng thái khác nhau để test luồng client, admin và revenue.
+- Mock database tại `src/data/db.json`.
+
+Ứng dụng chạy hoàn toàn phía frontend, giao tiếp với mock API qua `axios` đến `http://localhost:3000`.
 
 ## Công nghệ sử dụng
 
 - Vue 3
 - Vue Router 4
 - Axios
-- Pinia
-- JSON Server
 - Vue CLI
+- JSON Server
+- Pinia
+
+Ghi chú:
+
+- `Pinia` đã được cài và khởi tạo trong `src/main.js`, nhưng hiện tại project chưa tách store riêng, phần lớn state vẫn đang được xử lý trực tiếp trong component.
+- Project có chức năng biểu đồ dashboard và xuất PDF doanh thu. Nếu sau này bổ sung hoặc thay đổi package liên quan, nên cập nhật lại mục này theo đúng `package.json`.
 
 ## Chức năng chính
 
-- Hiển thị danh sách sản phẩm sneaker.
-- Banner trang chủ.
+### 1. Khu vực client
+
+- Hiển thị banner trang chủ.
+- Hiển thị danh sách sản phẩm dạng lưới.
 - Tìm kiếm sản phẩm theo tên hoặc thương hiệu.
-- Lọc sản phẩm theo brand: Nike, Adidas, MLB, Vans, New Balance, Puma.
+- Lọc sản phẩm theo brand: `Nike`, `Adidas`, `MLB`, `Vans`, `New Balance`, `Puma`.
+- Ẩn các sản phẩm có `isActive = false`.
 - Phân trang danh sách sản phẩm.
-- Xem chi tiết sản phẩm, chọn size, chọn số lượng theo tồn kho.
-- Đăng ký tài khoản mới.
+- Xem chi tiết sản phẩm.
+- Chọn size theo tồn kho thực tế.
+- Chọn số lượng theo giới hạn stock của size đã chọn.
+- Thêm vào giỏ hàng theo tổ hợp `productId + size`.
+- Đăng ký tài khoản mới với `isActive: true` mặc định.
 - Đăng nhập và lưu phiên đăng nhập bằng `localStorage`.
-- Route guard cho các trang cần đăng nhập: giỏ hàng, hồ sơ, thanh toán, hóa đơn.
-- Thêm sản phẩm vào giỏ hàng theo `productId + size`.
-- Cập nhật số lượng và xóa sản phẩm trong giỏ hàng.
-- Lưu thông tin giao hàng trong trang hồ sơ.
-- Tạo đơn hàng ở trang checkout.
-- Tính phí vận chuyển:
-  - Miễn phí với đơn từ `1.000.000đ`
-  - Thu `30.000đ` với đơn dưới mức này
+- Route guard cho các trang cần đăng nhập.
+- Nếu tài khoản bị khóa:
+  - chặn đăng nhập mới
+  - nếu đang đăng nhập mà reload hoặc đổi route sẽ bị đăng xuất và chuyển về trang đăng nhập
+- Xem, tăng giảm số lượng, xóa sản phẩm trong giỏ hàng.
+- Lưu thông tin giao hàng trong trang hồ sơ cá nhân.
+- Tự động điền thông tin giao hàng ở trang checkout từ profile.
+- Hỗ trợ hai hình thức thanh toán:
+  - COD
+  - Chuyển khoản giả lập bằng QR
+- Tạo đơn hàng mới từ giỏ hàng.
 - Trừ tồn kho khi đặt hàng.
-- Xem lịch sử hóa đơn của người dùng.
-- Hủy đơn hàng đang chờ xác nhận và hoàn lại tồn kho.
+- Xóa giỏ hàng sau khi checkout thành công.
+- Xem lịch sử đơn hàng theo từng user.
+- Lọc đơn hàng theo trạng thái.
+- Phân trang danh sách đơn hàng phía client.
+- Hủy đơn ở trạng thái `pending` và hoàn trả tồn kho.
+- Đăng xuất có hộp thoại xác nhận bằng `BaseConfirmModal`.
+
+### 2. Khu vực admin
+
+#### Dashboard
+
+- Thống kê:
+  - tổng số sản phẩm
+  - số sản phẩm đang hiển thị
+  - tổng số đơn hàng
+  - tổng số user
+  - doanh thu từ đơn hoàn thành
+- Biểu đồ trạng thái đơn hàng.
+- Biểu đồ doanh thu theo:
+  - 7 ngày gần nhất
+  - 30 ngày gần nhất
+  - 12 tháng gần nhất
+- Các card có thể click để chuyển nhanh sang trang quản lý tương ứng.
+
+#### Quản lý sản phẩm
+
+- Tìm kiếm.
+- Lọc theo brand.
+- Phân trang.
+- Thêm sản phẩm.
+- Sửa sản phẩm.
+- Thêm/xóa size.
+- Ẩn/hiện sản phẩm.
+- Xóa sản phẩm.
+
+#### Quản lý đơn hàng
+
+- Lọc theo trạng thái.
+- Tìm theo mã đơn.
+- Phân trang.
+- Cập nhật trạng thái đơn bằng custom dropdown.
+- Xác nhận khi đổi sang bất kỳ trạng thái nào.
+- Màu xác nhận theo từng trạng thái:
+  - `pending`: vàng
+  - `confirmed`: xanh dương
+  - `shipping`: tím
+  - `completed`: xanh lá
+  - `cancelled`: đỏ
+- Ghi nhận `completedAt` đúng logic khi chuyển sang trạng thái hoàn thành.
+- Nút lưu thủ công đã được bỏ, cập nhật trực tiếp theo thao tác xác nhận.
+
+#### Quản lý người dùng
+
+- Tìm kiếm theo tên/email.
+- Ẩn tài khoản admin khỏi bảng.
+- Xem số đơn hàng của từng user (không tính đơn `cancelled`).
+- Xem số lượng sản phẩm trong giỏ.
+- Xem thông tin giao hàng.
+- Xem nhanh danh sách đơn của từng user bằng modal.
+- Khóa / mở khóa tài khoản.
+- Xóa tài khoản.
+- Nút khóa, mở khóa, xóa đều có xác nhận bằng `BaseConfirmModal`.
+
+Khi khóa tài khoản:
+
+- `isActive` của user sẽ bị chuyển thành `false`.
+- User bị chặn đăng nhập ở lần kiểm tra tiếp theo.
+- Các đơn đang `pending`, `confirmed`, `shipping` sẽ bị chuyển `cancelled`.
+- Tồn kho của các đơn đó được hoàn lại.
+
+#### Quản lý doanh thu
+
+- Route riêng `/admin/revenue`.
+- Lọc theo ngày.
+- Lọc theo tháng.
+- Lọc theo năm.
+- Lọc theo khoảng ngày.
+- Thống kê:
+  - tổng doanh thu
+  - số đơn hoàn thành
+  - giá trị trung bình / đơn
+  - đơn cao nhất
+  - đơn thấp nhất
+  - tổng sản phẩm đã bán
+  - số đơn COD
+  - số đơn chuyển khoản
+- Bảng chi tiết doanh thu có cột số sản phẩm.
+- Phân trang.
+- Custom dropdown cho kiểu lọc.
+- Xuất báo cáo doanh thu ra PDF.
+- Nút xuất PDF có xác nhận bằng `BaseConfirmModal`.
+- PDF đã dùng font custom để hiển thị tiếng Việt.
+
+## Component dùng chung
+
+Project hiện có một số component tái sử dụng ở `src/components/common`:
+
+- `BaseConfirmModal.vue`
+- `BasePagination.vue`
+- `BaseSearchBox.vue`
+- `BaseBrandFilter.vue`
+
+`BaseConfirmModal` hiện đang được dùng ở nhiều luồng quan trọng như:
+
+- đăng xuất client
+- đăng xuất admin
+- khóa user
+- xóa user
+- đổi trạng thái đơn hàng
+- xuất PDF
+
+## Kiến trúc và luồng hoạt động
+
+### Xác thực và phân quyền
+
+- Người dùng đăng nhập qua mock API `users`.
+- Thông tin phiên hiện tại lưu ở `localStorage` với key `currentUser`.
+- `router.beforeEach` kiểm tra:
+  - route có cần đăng nhập hay không
+  - user còn tồn tại và còn `isActive`
+  - route admin chỉ cho `role = admin`
+
+### Giỏ hàng
+
+- Giỏ hàng được lưu theo từng user trong `users[].cart.items` của `db.json`.
+- Ở trang chi tiết sản phẩm, thao tác thêm giỏ hàng ghi trực tiếp lên dữ liệu user qua API.
+- Mỗi item giỏ hàng có dạng:
+  - `productId`
+  - `size`
+  - `quantity`
+  - `addedAt`
+
+### Đơn hàng
+
+- Khi checkout thành công:
+  - tạo bản ghi mới trong `orders`
+  - trừ tồn kho tương ứng trong `products[].sizes`
+  - xóa giỏ hàng của user
+- Các trạng thái đơn đang được dùng trong project:
+  - `pending`
+  - `confirmed`
+  - `shipping`
+  - `completed`
+  - `cancelled`
+
+### Doanh thu
+
+- Chỉ tính các đơn có trạng thái `completed`.
+- Biểu đồ và báo cáo doanh thu sử dụng `completedAt` làm mốc thống kê.
 
 ## Cấu trúc dữ liệu mock
 
-File dữ liệu chính nằm tại `src/data/db.json`, gồm 3 nhóm:
+File dữ liệu chính: `src/data/db.json`
 
-- `products`: thông tin sản phẩm, giá, ảnh, mô tả, danh sách size và số lượng tồn.
-- `users`: tài khoản người dùng, vai trò, giỏ hàng, thông tin giao hàng.
-- `orders`: đơn hàng đã tạo, trạng thái đơn, danh sách sản phẩm và tổng tiền.
+### `products`
 
-## Các màn hình chính
+Mỗi sản phẩm gồm các trường chính:
 
-- Trang chủ: banner + danh sách sản phẩm.
-- Trang chi tiết sản phẩm.
-- Trang đăng nhập / đăng ký.
-- Trang giỏ hàng.
-- Trang thanh toán.
-- Trang hồ sơ cá nhân.
-- Trang hóa đơn / lịch sử đơn hàng.
+- `id`
+- `name`
+- `brand`
+- `isActive`
+- `price`
+- `image`
+- `description`
+- `sizes`
 
-## Cách chạy dự án
+Trong đó `sizes` là mảng các object:
 
-### 1. Cài dependencies
+- `id`
+- `size`
+- `quantity`
+
+### `users`
+
+Mỗi user gồm các trường chính:
+
+- `id`
+- `name`
+- `email`
+- `password`
+- `role`
+- `isActive`
+- `cart`
+- `shippingInfo`
+
+### `orders`
+
+Mỗi đơn hàng gồm các trường chính:
+
+- `id`
+- `userId`
+- `customerInfo`
+- `paymentMethod`
+- `items`
+- `subtotal`
+- `shippingFee`
+- `totalAmount`
+- `status`
+- `createdAt`
+- `completedAt` (nếu có)
+
+## Cấu trúc thư mục
+
+```text
+src/
+|-- assets/
+|   |-- banners/               # ảnh banner trang chủ
+|   |-- fonts/                 # font phục vụ xuất PDF
+|   |-- sneakers/              # ảnh sản phẩm
+|-- components/
+|   |-- client/                # component khu vực shop
+|   |-- common/                # component dùng chung
+|-- data/
+|   |-- db.json                # mock database cho json-server
+|-- layouts/
+|   |-- AdminLayout.vue
+|   |-- ClientLayout.vue
+|-- router/
+|   |-- index.js               # route config + route guard
+|-- services/
+|-- utils/
+|-- views/
+|   |-- admin/                 # dashboard, products, orders, users, revenue
+|   |-- client/                # home, login, register, cart, checkout, orders...
+|-- App.vue
+|-- main.js
+```
+
+## Các route chính
+
+### Client
+
+- `/` trang chủ
+- `/product/:id` chi tiết sản phẩm
+- `/login` đăng nhập
+- `/register` đăng ký
+- `/cart` giỏ hàng
+- `/checkout` thanh toán
+- `/orders` đơn hàng của người dùng
+- `/profile` hồ sơ cá nhân
+
+### Admin
+
+- `/admin` dashboard
+- `/admin/products` quản lý sản phẩm
+- `/admin/orders` quản lý đơn hàng
+- `/admin/users` quản lý người dùng
+- `/admin/revenue` quản lý doanh thu
+
+## Hướng dẫn cài đặt và chạy project
+
+### 1. Yêu cầu môi trường
+
+- Node.js 18+ khuyến nghị
+- npm
+- `json-server`
+
+Lưu ý: trong `package.json`, script `npm run db` đang gọi trực tiếp lệnh `json-server`, nhưng package này hiện chưa được khai báo trong `dependencies/devDependencies`. Vì vậy cần cài global hoặc tự bổ sung vào project.
+
+### 2. Cài dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Chạy mock API với JSON Server
-
-Nếu máy chưa có `json-server`, cài trước:
+### 3. Cài `json-server` nếu máy chưa có
 
 ```bash
 npm install -g json-server
 ```
 
-Sau đó chạy:
+### 4. Chạy mock API
 
 ```bash
 npm run db
 ```
 
-Mock API sẽ chạy tại:
+Mock API mặc định chạy tại:
 
 ```text
 http://localhost:3000
 ```
 
-### 3. Chạy frontend
+### 5. Chạy frontend
 
-Mở terminal khác và chạy:
+Mở terminal khác:
 
 ```bash
 npm run serve
@@ -105,66 +361,61 @@ http://localhost:8080
 ```bash
 npm run serve   # chạy môi trường development
 npm run build   # build production
-npm run lint    # kiểm tra eslint
+npm run lint    # chạy eslint
 npm run db      # chạy json-server với src/data/db.json
 ```
 
 ## Tài khoản mẫu
 
-Có thể dùng dữ liệu có sẵn trong `src/data/db.json`:
+Tài khoản có sẵn trong dữ liệu mẫu:
 
-- User:
-  - Email: `vana@gmail.com`
-  - Password: `123456`
-- Admin:
-  - Email: `admin@gmail.com`
-  - Password: `admin123`
+### User
 
-Lưu ý: hiện tại dự án có dữ liệu admin trong mock API nhưng phần giao diện tập trung vào phía client mua hàng, chưa triển khai dashboard quản trị riêng.
+- Email: `vana@gmail.com`
+- Password: `123456`
 
-## Cấu trúc thư mục
+### Admin
 
-```text
-src/
-|-- assets/                 # ảnh banner, ảnh sản phẩm
-|-- components/
-|   |-- client/             # header, footer, card, list, modal...
-|   |-- common/             # component dùng chung
-|-- data/
-|   |-- db.json             # mock database cho json-server
-|-- router/
-|   |-- index.js            # cấu hình route + guard
-|-- views/
-|   |-- client/             # các trang phía người dùng
-|-- App.vue
-|-- main.js
-```
+- Email: `admin@gmail.com`
+- Password: `admin123`
 
-## Luồng hoạt động chính
-Developer: Reload Window
-1. Người dùng vào trang chủ để xem danh sách sản phẩm.
-2. Có thể lọc theo thương hiệu hoặc tìm kiếm theo từ khóa.
-3. Chọn sản phẩm để xem chi tiết, chọn size và số lượng.
-4. Đăng nhập trước khi thêm vào giỏ và thanh toán.
-5. Ở giỏ hàng, người dùng cập nhật số lượng hoặc xóa sản phẩm.
-6. Tại checkout, người dùng nhập thông tin nhận hàng và chọn phương thức thanh toán.
-7. Khi đặt hàng:
-   - tạo bản ghi trong `orders`
-   - cập nhật lại tồn kho sản phẩm
-   - xóa giỏ hàng của user
-8. Người dùng xem lại đơn ở trang hóa đơn và có thể hủy đơn khi trạng thái còn `pending`.
+### Một số user khác trong dữ liệu
 
-## Điểm đáng chú ý
+- `a@gmail.com` / `123456`
+- `b@gmail.com` / `123456`
+- `c@gmail.com` / `123456`
+- `h@gmail.com` / `123456`
 
-- Dữ liệu đăng nhập hiện lưu ở `localStorage`, phù hợp cho bài tập mô phỏng frontend, chưa phải giải pháp bảo mật thực tế.
-- Backend hiện là mock API nên chưa có xác thực JWT, phân quyền server-side hay thanh toán thật.
-- Một số file dữ liệu tiếng Việt trong dự án đang có dấu hiệu lệch encoding, nhưng không ảnh hưởng đến cấu trúc chức năng chính của bài.
+## Quy tắc nghiệp vụ đang áp dụng
+
+- Chỉ user đăng nhập mới truy cập được giỏ hàng, checkout, hồ sơ và đơn hàng.
+- Chỉ admin mới truy cập được `/admin`.
+- Nếu user bị khóa (`isActive = false`), route guard sẽ xóa `currentUser` và chuyển về trang đăng nhập.
+- Phí vận chuyển:
+  - `0đ` nếu đơn từ `1.000.000đ` trở lên
+  - `30.000đ` nếu thấp hơn mức đó
+- Chức năng QR chuyển khoản hiện là mô phỏng frontend:
+  - hiển thị ảnh QR từ dịch vụ ngoài
+  - sau vài giây sẽ tự xác nhận như một thanh toán thành công giả lập
+
+## Điểm cần lưu ý
+
+- Đây là project frontend dùng mock API, chưa có backend thật.
+- Chưa có JWT, refresh token, phân quyền server-side hoặc mã hóa mật khẩu.
+- Dữ liệu đăng nhập đang lưu ở `localStorage`, chỉ phù hợp cho mục đích học tập và demo.
+- Chức năng tạo QR phụ thuộc vào ảnh từ dịch vụ bên ngoài `api.qrserver.com`.
+- Dữ liệu mock có thể bị thay đổi khi thao tác thêm/xóa/sửa trong quá trình test.
 
 ## Hướng phát triển thêm
 
-- Tách store dùng Pinia để quản lý giỏ hàng và user tập trung hơn.
-- Bổ sung trang quản trị sản phẩm / đơn hàng.
-- Thêm bộ lọc giá, sắp xếp sản phẩm.
-- Kết nối backend thật với cơ sở dữ liệu.
-- Thêm thanh toán online thực tế.
-- Bổ sung toast, loading state và xử lý lỗi đồng bộ hơn trên toàn hệ thống.
+- Tách state sang Pinia store thay vì xử lý phân tán trong component.
+- Bổ sung validation mạnh hơn cho admin form sản phẩm.
+- Thêm toast/loading/error handling đồng bộ toàn hệ thống.
+- Tạo backend thật với xác thực và phân quyền chuẩn.
+- Đồng bộ logic đơn hàng với lịch sử thay đổi trạng thái.
+- Viết test cho các luồng quan trọng như checkout, hủy đơn, khóa user.
+- Tối ưu responsive cho toàn bộ admin panel.
+
+## License
+
+Project phát hành theo giấy phép `MIT`. Xem chi tiết trong file `LICENSE`.
