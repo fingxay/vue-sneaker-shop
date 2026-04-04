@@ -95,27 +95,45 @@
             </div>
 
             <div class="admin-order-status-wrap">
-
               <div class="admin-order-actions">
-                <select
-                  class="admin-order-select"
-                  :class="`status-${order.tempStatus}`"
-                  v-model="order.tempStatus"
+                <div
+                  class="status-dropdown"
+                  :ref="(el) => setDropdownRef(order.id, el)"
                 >
-                  <option value="pending">Chờ xác nhận</option>
-                  <option value="confirmed">Đã xác nhận</option>
-                  <option value="shipping">Đang giao</option>
-                  <option value="completed">Hoàn thành</option>
-                  <option value="cancelled">Đã hủy</option>
-                </select>
+                  <button
+                    type="button"
+                    class="status-dropdown-trigger"
+                    :class="`status-${order.tempStatus}`"
+                    @click="toggleStatusDropdown(order.id)"
+                  >
+                    <span>{{ getStatusLabel(order.tempStatus) }}</span>
+                    <span
+                      class="status-dropdown-arrow"
+                      :class="{ open: openDropdownId === order.id }"
+                    >
+                      ▼
+                    </span>
+                  </button>
 
-                <button
-                  type="button"
-                  class="admin-order-save-btn"
-                  @click="handleStatusChange(order)"
-                >
-                  Lưu
-                </button>
+                  <div
+                    v-if="openDropdownId === order.id"
+                    class="status-dropdown-menu"
+                  >
+                    <button
+                      v-for="status in statusOptions"
+                      :key="status.value"
+                      type="button"
+                      class="status-dropdown-item"
+                      :class="[
+                        `status-${status.value}`,
+                        { active: order.tempStatus === status.value }
+                      ]"
+                      @click="handleStatusOptionClick(order, status.value)"
+                    >
+                      {{ status.label }}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -163,13 +181,25 @@
       />
     </div>
   </div>
+
+  <BaseConfirmModal
+    :isOpen="isStatusConfirmOpen"
+    title="Xác nhận chuyển trạng thái"
+    :message="`Bạn có chắc muốn chuyển đơn #${selectedOrderToConfirm?.id || ''} sang trạng thái ${getStatusLabel(pendingStatusValue)} không?`"
+    :confirmText="`Chuyển sang ${getStatusLabel(pendingStatusValue)}`"
+    cancelText="Hủy"
+    :variant="getStatusConfirmVariant(pendingStatusValue)"
+    @confirm="confirmStatusChange"
+    @cancel="closeStatusConfirm"
+  />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import BasePagination from '@/components/common/BasePagination.vue'
 import BaseSearchBox from '@/components/common/BaseSearchBox.vue'
+import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
 
 const orders = ref([])
 const loading = ref(false)
@@ -179,6 +209,19 @@ const itemsPerPage = 5
 const saveSuccessMessage = ref('')
 const searchKeyword = ref('')
 const appliedSearchKeyword = ref('')
+const isStatusConfirmOpen = ref(false)
+const selectedOrderToConfirm = ref(null)
+const pendingStatusValue = ref('')
+const openDropdownId = ref(null)
+const dropdownRefs = ref({})
+
+const statusOptions = [
+  { value: 'pending', label: 'Chờ xác nhận' },
+  { value: 'confirmed', label: 'Đã xác nhận' },
+  { value: 'shipping', label: 'Đang giao' },
+  { value: 'completed', label: 'Hoàn thành' },
+  { value: 'cancelled', label: 'Đã hủy' }
+]
 
 const filteredOrders = computed(() => {
   let result = orders.value
@@ -208,6 +251,41 @@ const paginatedOrders = computed(() => {
   return filteredOrders.value.slice(start, end)
 })
 
+const setDropdownRef = (orderId, el) => {
+  if (el) {
+    dropdownRefs.value[orderId] = el
+  } else {
+    delete dropdownRefs.value[orderId]
+  }
+}
+
+const toggleStatusDropdown = (orderId) => {
+  openDropdownId.value = openDropdownId.value === orderId ? null : orderId
+}
+
+const handleClickOutside = (event) => {
+  if (!openDropdownId.value) return
+
+  const currentDropdown = dropdownRefs.value[openDropdownId.value]
+
+  if (currentDropdown && !currentDropdown.contains(event.target)) {
+    openDropdownId.value = null
+  }
+}
+
+const confirmStatusChange = async () => {
+  if (!selectedOrderToConfirm.value || !pendingStatusValue.value) return
+
+  const order = selectedOrderToConfirm.value
+  const newStatus = pendingStatusValue.value
+
+  isStatusConfirmOpen.value = false
+  selectedOrderToConfirm.value = null
+  pendingStatusValue.value = ''
+
+  await handleStatusChange(order, newStatus)
+}
+
 const handleChangeStatus = (status) => {
   selectedStatus.value = status
   currentPage.value = 1
@@ -222,24 +300,69 @@ const handleChangePage = (page) => {
   currentPage.value = page
 }
 
-const handleStatusChange = async (order) => {
+const getStatusLabel = (status) => {
+  const statusMap = {
+    pending: 'Chờ xác nhận',
+    confirmed: 'Đã xác nhận',
+    shipping: 'Đang giao',
+    completed: 'Hoàn thành',
+    cancelled: 'Đã hủy'
+  }
+
+  return statusMap[status] || status
+}
+
+const getStatusConfirmVariant = (status) => {
+  if (status === 'confirmed') return 'info'
+  if (status === 'shipping') return 'purple'
+  if (status === 'completed') return 'success'
+  if (status === 'cancelled') return 'danger'
+  return 'warning'
+}
+
+const handleStatusOptionClick = (order, newStatus) => {
+  openDropdownId.value = null
+
+  if (newStatus === order.status) {
+    order.tempStatus = order.status
+    return
+  }
+
+  order.tempStatus = newStatus
+  selectedOrderToConfirm.value = order
+  pendingStatusValue.value = newStatus
+  isStatusConfirmOpen.value = true
+}
+
+const closeStatusConfirm = () => {
+  if (selectedOrderToConfirm.value) {
+    selectedOrderToConfirm.value.tempStatus = selectedOrderToConfirm.value.status
+  }
+
+  isStatusConfirmOpen.value = false
+  selectedOrderToConfirm.value = null
+  pendingStatusValue.value = ''
+}
+
+const handleStatusChange = async (order, newStatus) => {
   try {
     const patchData = {
-      status: order.tempStatus
+      status: newStatus
     }
 
-    if (order.tempStatus === 'completed' && order.status !== 'completed') {
+    if (newStatus === 'completed' && order.status !== 'completed') {
       patchData.completedAt = new Date().toISOString()
     }
 
-    if (order.tempStatus !== 'completed') {
+    if (newStatus !== 'completed') {
       patchData.completedAt = null
     }
 
     await axios.patch(`http://localhost:3000/orders/${order.id}`, patchData)
 
-    order.status = order.tempStatus
-    order.completedAt = patchData.completedAt ?? order.completedAt
+    order.status = newStatus
+    order.tempStatus = newStatus
+    order.completedAt = patchData.completedAt
 
     saveSuccessMessage.value = `Đã lưu trạng thái đơn #${order.id} thành công`
 
@@ -248,6 +371,7 @@ const handleStatusChange = async (order) => {
     }, 3000)
   } catch (error) {
     console.error(error)
+    order.tempStatus = order.status
   }
 }
 
@@ -283,6 +407,11 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   fetchOrders()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -420,68 +549,111 @@ onMounted(() => {
   gap: 10px;
 }
 
-.admin-order-select {
-  min-width: 170px;
-  height: 40px;
-  padding: 0 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  background: #fff;
-  color: #111827;
-  font-size: 14px;
-  font-weight: 600;
-  outline: none;
+.status-dropdown {
+  position: relative;
+  min-width: 190px;
 }
 
-.admin-order-select.status-pending {
+.status-dropdown-trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+}
+
+.status-dropdown-trigger:hover {
+  transform: translateY(-1px);
+}
+
+.status-dropdown-arrow {
+  font-size: 12px;
+  transition: 0.2s ease;
+  flex-shrink: 0;
+}
+
+.status-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.status-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+  z-index: 50;
+  animation: dropdownFadeIn 0.18s ease;
+}
+
+.status-dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  border-radius: 12px;
+  padding: 11px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+  margin-bottom: 4px;
+}
+
+.status-dropdown-item:last-child {
+  margin-bottom: 0;
+}
+
+.status-dropdown-item:hover {
+  transform: translateX(2px);
+}
+
+.status-dropdown-item.active {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.status-pending {
   background: #fef3c7;
   color: #92400e;
   border-color: #f59e0b;
 }
 
-.admin-order-select.status-confirmed {
+.status-confirmed {
   background: #dbeafe;
   color: #1d4ed8;
   border-color: #60a5fa;
 }
 
-.admin-order-select.status-shipping {
+.status-shipping {
   background: #ede9fe;
   color: #7c3aed;
   border-color: #a78bfa;
 }
 
-.admin-order-select.status-completed {
+.status-completed {
   background: #dcfce7;
   color: #15803d;
   border-color: #4ade80;
 }
 
-.admin-order-select.status-cancelled {
+.status-cancelled {
   background: #fee2e2;
   color: #dc2626;
   border-color: #f87171;
-}
-
-.admin-order-select:focus {
-  border-color: #facc15;
-}
-
-.admin-order-save-btn {
-  height: 40px;
-  padding: 0 16px;
-  border: none;
-  border-radius: 10px;
-  background: #111827;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.admin-order-save-btn:hover {
-  opacity: 0.92;
 }
 
 .admin-order-item-left {
@@ -493,7 +665,7 @@ onMounted(() => {
 
 .admin-order-item-image {
   width: 76px;
-  height: 7 6px;
+  height: 76px;
   object-fit: cover;
   border-radius: 12px;
   background: #f5f5f5;
@@ -509,5 +681,17 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 700;
   box-shadow: 0 8px 20px rgba(22, 163, 74, 0.12);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

@@ -11,7 +11,7 @@
         <router-link to="/admin/revenue" active-class="active-link">Doanh thu</router-link>
         <router-link to="/">Về trang shop</router-link>
 
-        <button type="button" class="admin-logout-btn" @click="handleLogout">
+        <button type="button" class="admin-logout-btn" @click="openLogoutConfirm">
           Đăng xuất
         </button>
       </nav>
@@ -24,16 +24,39 @@
 
       <router-view />
     </main>
+
+    <BaseConfirmModal
+      :isOpen="showLogoutConfirm"
+      title="Xác nhận đăng xuất"
+      message="Bạn có chắc muốn đăng xuất khỏi trang quản trị không?"
+      confirmText="Đăng xuất"
+      cancelText="Ở lại"
+      variant="warning"
+      @confirm="handleLogout"
+      @cancel="closeLogoutConfirm"
+    />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
 
 const router = useRouter()
+const showLogoutConfirm = ref(false)
+
+const openLogoutConfirm = () => {
+  showLogoutConfirm.value = true
+}
+
+const closeLogoutConfirm = () => {
+  showLogoutConfirm.value = false
+}
 
 const handleLogout = () => {
   localStorage.removeItem('currentUser')
+  showLogoutConfirm.value = false
   router.push('/login')
 }
 </script>

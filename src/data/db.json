@@ -1145,9 +1145,9 @@
       "subtotal": 1640000,
       "shippingFee": 30000,
       "totalAmount": 1670000,
-      "status": "completed",
+      "status": "pending",
       "createdAt": "2027-11-21T01:50:00.000Z",
-      "completedAt": "2027-11-24T07:20:00.000Z"
+      "completedAt": null
     },
     {
       "id": "5141",

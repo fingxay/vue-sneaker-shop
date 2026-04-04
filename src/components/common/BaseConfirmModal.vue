@@ -85,7 +85,9 @@ const variantClass = computed(() => {
   return {
     'is-danger': props.variant === 'danger',
     'is-warning': props.variant === 'warning',
-    'is-success': props.variant === 'success'
+    'is-success': props.variant === 'success',
+    'is-info': props.variant === 'info',
+    'is-purple': props.variant === 'purple'
   }
 })
 
@@ -218,6 +220,21 @@ const handleOverlayClick = () => {
   background: #059669;
 }
 
+.confirm-btn.is-info {
+  background: #2563eb;
+}
+
+.confirm-btn.is-info:hover {
+  background: #1d4ed8;
+}
+
+.confirm-btn.is-purple {
+  background: #7c3aed;
+}
+
+.confirm-btn.is-purple:hover {
+  background: #6d28d9;
+}
 @keyframes modalFadeIn {
   from {
     opacity: 0;

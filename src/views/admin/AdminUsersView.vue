@@ -64,7 +64,7 @@
                   <button
                     type="button"
                     class="lock-user-btn"
-                    @click="toggleUserStatus(user)"
+                    @click="handleUserStatusClick(user)"
                   >
                     {{ user.isActive ? 'Khóa' : 'Mở khóa' }}
                   </button>
@@ -138,6 +138,17 @@
     @confirm="confirmDeleteUser"
     @cancel="closeDeleteModal"
   />
+
+  <BaseConfirmModal
+  :isOpen="isLockModalOpen"
+  title="Khóa tài khoản"
+  message="Bạn có chắc muốn khóa tài khoản này không? Hệ thống sẽ hủy các đơn pending / confirmed / shipping và hoàn lại tồn kho."
+  confirmText="Khóa tài khoản"
+  cancelText="Hủy"
+  variant="warning"
+  @confirm="confirmLockUser"
+  @cancel="closeLockModal"
+/>
 </template>
 
 <script setup>
@@ -153,6 +164,8 @@ const selectedUserToDelete = ref(null)
 const isOrdersModalOpen = ref(false)
 const selectedUserOrders = ref([])
 const selectedUserName = ref('')
+const isLockModalOpen = ref(false)
+const selectedUserToLock = ref(null)
 
 const filteredUsers = computed(() => {
   const keyword = searchText.value.toLowerCase()
@@ -230,6 +243,29 @@ const restoreInventoryForOrder = async (order) => {
   }
 }
 
+const handleUserStatusClick = (user) => {
+  if (user.isActive) {
+    selectedUserToLock.value = user
+    isLockModalOpen.value = true
+    return
+  }
+
+  toggleUserStatus(user)
+}
+
+const closeLockModal = () => {
+  isLockModalOpen.value = false
+  selectedUserToLock.value = null
+}
+
+const confirmLockUser = async () => {
+  if (!selectedUserToLock.value) return
+
+  const user = selectedUserToLock.value
+  closeLockModal()
+  await toggleUserStatus(user)
+}
+
 const toggleUserStatus = async (user) => {
   try {
     const nextStatus = !user.isActive
@@ -252,7 +288,7 @@ const toggleUserStatus = async (user) => {
         await axios.patch(`http://localhost:3000/orders/${order.id}`, {
           status: 'cancelled'
         })
-        
+
         selectedUserOrders.value = selectedUserOrders.value.map((order) => {
           if (
             order.userId === user.id &&

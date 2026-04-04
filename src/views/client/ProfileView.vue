@@ -70,7 +70,7 @@
         </div>
 
         <div class="profile-actions">
-          <button type="button" class="logout-btn" @click="handleLogout">
+          <button type="button" class="logout-btn" @click="openLogoutConfirm">
             Đăng xuất
           </button>
         </div>
@@ -82,16 +82,28 @@
         <router-link to="/login" class="go-login-btn">Đi đến đăng nhập</router-link>
       </div>
     </div>
+
+    <BaseConfirmModal
+      :isOpen="showLogoutConfirm"
+      title="Xác nhận đăng xuất"
+      message="Bạn có chắc muốn đăng xuất khỏi tài khoản này không?"
+      confirmText="Đăng xuất"
+      cancelText="Ở lại"
+      variant="warning"
+      @confirm="handleLogout"
+      @cancel="closeLogoutConfirm"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { reactive } from 'vue'
 import axios from 'axios'
+import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
 
 const shippingMessage = ref('')
+const showLogoutConfirm = ref(false)
 
 const shippingInfo = reactive({
   fullName: '',
@@ -160,9 +172,18 @@ const fetchUserShippingInfo = async () => {
   }
 }
 
+const openLogoutConfirm = () => {
+  showLogoutConfirm.value = true
+}
+
+const closeLogoutConfirm = () => {
+  showLogoutConfirm.value = false
+}
+
 const handleLogout = () => {
   localStorage.removeItem('currentUser')
   currentUser.value = null
+  showLogoutConfirm.value = false
   router.push('/login')
 }
 
