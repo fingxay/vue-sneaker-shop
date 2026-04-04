@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import axios from 'axios'
 import HomeView from '@/views/client/HomeView.vue'
 import CartView from '@/views/client/CartView.vue'
 import ProductDetailView from '@/views/client/ProductDetailView.vue'
@@ -112,20 +113,39 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'))
 
-  if (to.meta.requiresAuth && !currentUser) {
+  if (!to.meta.requiresAuth) {
+    next()
+    return
+  }
+
+  if (!currentUser) {
     next('/login')
     return
   }
 
-  if (to.meta.requiresAdmin && currentUser?.role !== 'admin') {
-    next('/')
-    return
-  }
+  try {
+    const res = await axios.get(`http://localhost:3000/users/${currentUser.id}`)
+    const latestUser = res.data
 
-  next()
+    if (!latestUser || !latestUser.isActive) {
+      localStorage.removeItem('currentUser')
+      next('/login?blocked=1')
+      return
+    }
+
+    if (to.meta.requiresAdmin && latestUser.role !== 'admin') {
+      next('/')
+      return
+    }
+
+    next()
+  } catch (error) {
+    localStorage.removeItem('currentUser')
+    next('/login')
+  }
 })
 
 export default router

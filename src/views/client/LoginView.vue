@@ -42,11 +42,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
@@ -80,6 +81,11 @@ const handleLogin = async () => {
       return
     }
 
+    if (!foundUser.isActive) {
+      errorMessage.value = 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.'
+      return
+    }
+
     const currentUser = {
       id: foundUser.id,
       name: foundUser.name,
@@ -99,6 +105,12 @@ const handleLogin = async () => {
     console.error(error)
   }
 }
+
+onMounted(() => {
+  if (route.query.blocked === '1') {
+    errorMessage.value = 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.'
+  }
+})
 </script>
 
 <style scoped>

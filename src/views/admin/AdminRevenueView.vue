@@ -117,6 +117,31 @@
           <p class="revenue-card-label">Giá trị trung bình / đơn</p>
           <h3 class="revenue-card-value">{{ formatPrice(averageRevenue) }}</h3>
         </div>
+
+        <div class="revenue-summary-card">
+          <p class="revenue-card-label">Đơn cao nhất</p>
+          <h3 class="revenue-card-value">{{ formatPrice(highestOrderValue) }}</h3>
+        </div>
+
+        <div class="revenue-summary-card">
+          <p class="revenue-card-label">Đơn thấp nhất</p>
+          <h3 class="revenue-card-value">{{ formatPrice(lowestOrderValue) }}</h3>
+        </div>
+
+        <div class="revenue-summary-card">
+          <p class="revenue-card-label">Tổng sản phẩm đã bán</p>
+          <h3 class="revenue-card-value">{{ totalSoldProducts }}</h3>
+        </div>
+
+        <div class="revenue-summary-card">
+          <p class="revenue-card-label">Số đơn COD</p>
+          <h3 class="revenue-card-value">{{ codOrderCount }}</h3>
+        </div>
+
+        <div class="revenue-summary-card">
+          <p class="revenue-card-label">Số đơn chuyển khoản</p>
+          <h3 class="revenue-card-value">{{ bankingOrderCount }}</h3>
+        </div>
       </div>
 
       <div class="revenue-table-card">
@@ -127,6 +152,10 @@
               Chỉ tính các đơn đã hoàn thành
             </p>
           </div>
+
+          <button type="button" class="export-pdf-btn" @click="isExportPdfModalOpen = true">
+            Xuất PDF
+          </button>
         </div>
 
         <div v-if="!filteredCompletedOrders.length" class="admin-empty-state revenue-inner-empty">
@@ -142,6 +171,7 @@
                 <th>Ngày đặt</th>
                 <th>Hoàn thành lúc</th>
                 <th>Thanh toán</th>
+                <th>Số sản phẩm</th>
                 <th>Tổng tiền</th>
               </tr>
             </thead>
@@ -156,6 +186,13 @@
                 <td>{{ formatDate(order.createdAt) }}</td>
                 <td>{{ formatDate(order.completedAt) }}</td>
                 <td>{{ order.paymentMethod === 'cod' ? 'COD' : 'Chuyển khoản' }}</td>
+                <td>
+                  {{
+                    (order.items || []).reduce((total, item) => {
+                      return total + (Number(item.quantity) || 0)
+                    }, 0)
+                  }}
+                </td>
                 <td class="revenue-money-cell">{{ formatPrice(order.totalAmount) }}</td>
               </tr>
             </tbody>
@@ -170,12 +207,29 @@
       </div>
     </div>
   </div>
+
+  <BaseConfirmModal
+    :isOpen="isExportPdfModalOpen"
+    title="Xuất báo cáo PDF"
+    message="Bạn có chắc muốn xuất báo cáo doanh thu ra file PDF không?"
+    confirmText="Xuất PDF"
+    cancelText="Hủy"
+    variant="warning"
+    @confirm="handleConfirmExportPdf"
+    @cancel="isExportPdfModalOpen = false"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import BasePagination from '@/components/common/BasePagination.vue'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import robotoNormal from '@/assets/fonts/roboto-normal.js'
+import BaseConfirmModal from '@/components/common/BaseConfirmModal.vue'
+
+const isExportPdfModalOpen = ref(false)
 
 const loading = ref(false)
 const orders = ref([])
@@ -276,6 +330,44 @@ const averageRevenue = computed(() => {
   return totalRevenue.value / filteredCompletedOrders.value.length
 })
 
+const highestOrderValue = computed(() => {
+  if (!filteredCompletedOrders.value.length) return 0
+
+  return Math.max(
+    ...filteredCompletedOrders.value.map((order) => Number(order.totalAmount) || 0)
+  )
+})
+
+const lowestOrderValue = computed(() => {
+  if (!filteredCompletedOrders.value.length) return 0
+
+  return Math.min(
+    ...filteredCompletedOrders.value.map((order) => Number(order.totalAmount) || 0)
+  )
+})
+
+const totalSoldProducts = computed(() => {
+  return filteredCompletedOrders.value.reduce((total, order) => {
+    const orderItemCount = (order.items || []).reduce((sum, item) => {
+      return sum + (Number(item.quantity) || 0)
+    }, 0)
+
+    return total + orderItemCount
+  }, 0)
+})
+
+const codOrderCount = computed(() => {
+  return filteredCompletedOrders.value.filter(
+    (order) => order.paymentMethod === 'cod'
+  ).length
+})
+
+const bankingOrderCount = computed(() => {
+  return filteredCompletedOrders.value.filter(
+    (order) => order.paymentMethod === 'banking'
+  ).length
+})
+
 const handleChangePage = (page) => {
   currentPage.value = page
 }
@@ -343,6 +435,103 @@ const formatMonthOnly = (dateString) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   return `${year}-${month}`
+}
+
+const handleExportPdf = () => {
+  const doc = new jsPDF()
+  doc.addFileToVFS('Roboto-Regular.ttf', robotoNormal)
+  doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal')
+  doc.setFont('Roboto', 'normal')
+
+  const reportDate = new Date().toLocaleString('vi-VN')
+
+  let filterValue = 'Tất cả'
+  if (filterType.value === 'day') filterValue = selectedDay.value || '---'
+  if (filterType.value === 'month') filterValue = selectedMonth.value || '---'
+  if (filterType.value === 'year') filterValue = selectedYear.value || '---'
+  if (filterType.value === 'range') {
+    filterValue = `${startDate.value || '---'} đến ${endDate.value || '---'}`
+  }
+
+  doc.setFontSize(18)
+  doc.text('Báo cáo doanh thu', 14, 18)
+
+  doc.setFontSize(11)
+  doc.text(`Kiểu lọc: ${filterTypeLabel.value}`, 14, 28)
+  doc.text(`Thời gian báo cáo: ${filterValue}`, 14, 35)
+  doc.text(`Ngày xuất báo cáo: ${reportDate}`, 14, 42)
+
+  doc.setFontSize(13)
+  doc.text('Tổng quan', 14, 54)
+
+  const summaryRows = [
+    ['Tổng doanh thu', formatPrice(totalRevenue.value)],
+    ['Số đơn hoàn thành', String(filteredCompletedOrders.value.length)],
+    ['Giá trị trung bình / đơn', formatPrice(averageRevenue.value)],
+    ['Đơn cao nhất', formatPrice(highestOrderValue.value)],
+    ['Đơn thấp nhất', formatPrice(lowestOrderValue.value)],
+    ['ổng sản phẩm đã bán', String(totalSoldProducts.value)],
+    ['Số đơn COD', String(codOrderCount.value)],
+    ['Số đơn chuyển khoản', String(bankingOrderCount.value)]
+  ]
+
+  autoTable(doc, {
+    startY: 58,
+    head: [['Chỉ số', 'Giá trị']],
+    body: summaryRows,
+    theme: 'grid',
+    styles: {
+      font: 'Roboto',
+      fontStyle: 'normal'
+    },
+    headStyles: {
+      font: 'Roboto',
+      fontStyle: 'normal'
+    },
+    bodyStyles: {
+      font: 'Roboto',
+      fontStyle: 'normal'
+    }
+  })
+
+  const detailRows = filteredCompletedOrders.value.map((order) => [
+    `#${order.id}`,
+    order.customerInfo?.fullName || '---',
+    formatDate(order.completedAt),
+    order.paymentMethod === 'cod' ? 'COD' : 'Chuyển khoản',
+    String(
+      (order.items || []).reduce((total, item) => {
+        return total + (Number(item.quantity) || 0)
+      }, 0)
+    ),
+    formatPrice(order.totalAmount)
+  ])
+
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 10,
+    head: [['Mã đơn', 'Người nhận', 'Hoàn thành lúc', 'Thanh toán', 'Số SP', 'Tổng tiền']],
+    body: detailRows,
+    theme: 'grid',
+    styles: {
+      font: 'Roboto',
+      fontStyle: 'normal'
+    },
+    headStyles: {
+      font: 'Roboto',
+      fontStyle: 'normal'
+    },
+    bodyStyles: {
+      font: 'Roboto',
+      fontStyle: 'normal'
+    }
+  })
+
+  doc.save('bao-cao-doanh-thu.pdf')
+}
+
+const handleConfirmExportPdf = () => {
+  isExportPdfModalOpen.value = false
+  handleExportPdf()
 }
 
 watch(
@@ -447,7 +636,7 @@ onMounted(() => {
 
 .revenue-summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin: 24px 0;
 }
@@ -485,6 +674,22 @@ onMounted(() => {
   font-weight: 800;
   color: #111827;
   margin-bottom: 6px;
+}
+
+.export-pdf-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  background: #facc15;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 780;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.export-pdf-btn:hover {
+  opacity: 0.92;
 }
 
 .revenue-table-subtitle {
@@ -595,7 +800,13 @@ onMounted(() => {
   color: #111827;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
+  .revenue-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
   .revenue-summary-grid {
     grid-template-columns: 1fr;
   }

@@ -24,7 +24,7 @@
       "subtotal": 640000,
       "shippingFee": 0,
       "totalAmount": 640000,
-      "status": "pending",
+      "status": "cancelled",
       "createdAt": "2026-03-25T03:34:36.016Z"
     },
     {
@@ -791,7 +791,7 @@
       "subtotal": 1240000,
       "shippingFee": 30000,
       "totalAmount": 1270000,
-      "status": "confirmed",
+      "status": "cancelled",
       "createdAt": "2026-04-11T03:00:00.000Z"
     },
     {
@@ -953,9 +953,9 @@
       "subtotal": 1360000,
       "shippingFee": 30000,
       "totalAmount": 1390000,
-      "status": "completed",
+      "status": "cancelled",
       "createdAt": "2026-04-22T06:20:00.000Z",
-      "completedAt": "2026-04-24T13:10:00.000Z"
+      "completedAt": null
     },
     {
       "id": "Y2401",
@@ -1236,10 +1236,17 @@
       "email": "a@gmail.com",
       "password": "123456",
       "role": "user",
-      "isActive": true,
+      "isActive": false,
       "cart": {
-        "items": [],
-        "updatedAt": "2026-03-26T09:03:48.595Z"
+        "items": [
+          {
+            "productId": "3",
+            "size": "43",
+            "quantity": 1,
+            "addedAt": "2026-04-03T20:08:38.136Z"
+          }
+        ],
+        "updatedAt": "2026-04-03T20:08:38.136Z"
       },
       "shippingInfo": {
         "fullName": "aa",
@@ -1299,7 +1306,7 @@
         {
           "id": 1,
           "size": "36",
-          "quantity": 3
+          "quantity": 4
         },
         {
           "id": 2,
@@ -1834,7 +1841,7 @@
         {
           "id": 5,
           "size": "40",
-          "quantity": 7
+          "quantity": 8
         },
         {
           "id": 6,
@@ -1982,7 +1989,7 @@
         {
           "id": 4,
           "size": "39",
-          "quantity": null
+          "quantity": 1
         },
         {
           "id": 5,
@@ -2038,7 +2045,7 @@
         {
           "id": 5,
           "size": "40",
-          "quantity": null
+          "quantity": 2
         },
         {
           "id": 6,

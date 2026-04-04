@@ -204,6 +204,32 @@ const loadUsers = async () => {
   }
 }
 
+const restoreInventoryForOrder = async (order) => {
+  const productsRes = await axios.get('http://localhost:3000/products')
+  const products = productsRes.data || []
+
+  for (const item of order.items || []) {
+    const product = products.find((productItem) => productItem.id === item.productId)
+
+    if (!product) continue
+
+    const updatedSizes = (product.sizes || []).map((sizeItem) => {
+      if (sizeItem.size !== item.size) return sizeItem
+
+      const currentQuantity = Number(sizeItem.quantity) || 0
+
+      return {
+        ...sizeItem,
+        quantity: currentQuantity + item.quantity
+      }
+    })
+
+    await axios.patch(`http://localhost:3000/products/${product.id}`, {
+      sizes: updatedSizes
+    })
+  }
+}
+
 const toggleUserStatus = async (user) => {
   try {
     const nextStatus = !user.isActive
@@ -212,7 +238,38 @@ const toggleUserStatus = async (user) => {
       isActive: nextStatus
     })
 
-    user.isActive = nextStatus
+    if (!nextStatus) {
+      const userActiveOrders = orders.value.filter((order) => {
+        return (
+          order.userId === user.id &&
+          ['pending', 'confirmed', 'shipping'].includes(order.status)
+        )
+      })
+
+      for (const order of userActiveOrders) {
+        await restoreInventoryForOrder(order)
+
+        await axios.patch(`http://localhost:3000/orders/${order.id}`, {
+          status: 'cancelled'
+        })
+        
+        selectedUserOrders.value = selectedUserOrders.value.map((order) => {
+          if (
+            order.userId === user.id &&
+            ['pending', 'confirmed', 'shipping'].includes(order.status)
+          ) {
+            return {
+              ...order,
+              status: 'cancelled'
+            }
+          }
+
+          return order
+        })
+      }
+    }
+
+    await loadUsers()
   } catch (error) {
     console.error('Lỗi cập nhật trạng thái user:', error)
   }
