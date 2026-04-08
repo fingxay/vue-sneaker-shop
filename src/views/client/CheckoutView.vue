@@ -427,7 +427,7 @@ const handlePlaceOrder = async () => {
 
     bankTransferTimeout.value = setTimeout(() => {
       handleFakeBankTransfer()
-    }, 400000)
+    }, 6000)
 
     return
   }
