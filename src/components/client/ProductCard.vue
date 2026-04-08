@@ -18,7 +18,6 @@
       :isOpen="showSizeModal"
       :product="product"
       @close="closeModal"
-      @add-to-cart="handleAddToCart"
     />
   </div>
 </template>
@@ -33,8 +32,6 @@ const props = defineProps({
     required: true
   }
 })
-
-const emit = defineEmits(['add-to-cart'])
 
 const showSizeModal = ref(false)
 
@@ -52,10 +49,6 @@ const openModal = () => {
 
 const closeModal = () => {
   showSizeModal.value = false
-}
-
-const handleAddToCart = (cartItem) => {
-  emit('add-to-cart', cartItem)
 }
 </script>
 

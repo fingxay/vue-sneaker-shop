@@ -1173,8 +1173,116 @@
       "subtotal": 2880000,
       "shippingFee": 0,
       "totalAmount": 2880000,
-      "status": "pending",
+      "status": "cancelled",
       "createdAt": "2026-04-02T12:01:42.129Z"
+    },
+    {
+      "id": "eb52",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "4",
+          "name": "Adidas Superstar Trắng Kẻ Đen Mũi Sò REP 1:1",
+          "image": "sneaker4.jpg",
+          "price": 530000,
+          "size": "38",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 530000,
+      "shippingFee": 30000,
+      "totalAmount": 560000,
+      "status": "cancelled",
+      "createdAt": "2026-04-08T02:06:30.958Z"
+    },
+    {
+      "id": "2b73",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "3",
+          "name": "MLB Chunky Liner NY Embo Monogram Trắng REP 1:1",
+          "image": "sneaker3.jpg",
+          "price": 720000,
+          "size": "39",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 720000,
+      "shippingFee": 30000,
+      "totalAmount": 750000,
+      "status": "cancelled",
+      "createdAt": "2026-04-08T02:07:01.536Z"
+    },
+    {
+      "id": "b26f",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
+      },
+      "paymentMethod": "banking",
+      "items": [
+        {
+          "productId": "3",
+          "name": "MLB Chunky Liner NY Embo Monogram Trắng REP 1:1",
+          "image": "sneaker3.jpg",
+          "price": 720000,
+          "size": "41",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 720000,
+      "shippingFee": 30000,
+      "totalAmount": 750000,
+      "status": "pending",
+      "createdAt": "2026-04-08T02:43:08.094Z"
+    },
+    {
+      "id": "cde4",
+      "userId": "2",
+      "customerInfo": {
+        "fullName": "Admin",
+        "phone": "0987654321",
+        "address": "abcdef",
+        "city": "hcm",
+        "note": "213"
+      },
+      "paymentMethod": "cod",
+      "items": [
+        {
+          "productId": "1",
+          "name": "Giày Nike SB Force 58 Xám Đen REP 1:1",
+          "image": "sneaker1.jpg",
+          "price": 640000,
+          "size": "88",
+          "quantity": 1
+        }
+      ],
+      "subtotal": 640000,
+      "shippingFee": 30000,
+      "totalAmount": 670000,
+      "status": "pending",
+      "createdAt": "2026-04-08T02:49:44.624Z"
     }
   ],
   "users": [
@@ -1214,13 +1322,13 @@
       "cart": {
         "items": [
           {
-            "productId": "4",
-            "size": "38",
+            "productId": "1",
+            "size": "88",
             "quantity": 1,
-            "addedAt": "2026-04-02T12:01:51.977Z"
+            "addedAt": "2026-04-08T02:50:04.913Z"
           }
         ],
-        "updatedAt": "2026-04-02T12:01:59.379Z"
+        "updatedAt": "2026-04-08T02:50:04.913Z"
       },
       "shippingInfo": {
         "fullName": "Admin",
@@ -1423,7 +1531,7 @@
         {
           "id": 3,
           "size": "38",
-          "quantity": 0
+          "quantity": 8
         },
         {
           "id": 4,
@@ -1438,7 +1546,7 @@
         {
           "id": 6,
           "size": "41",
-          "quantity": 5
+          "quantity": 4
         },
         {
           "id": 7,
@@ -1474,7 +1582,7 @@
         {
           "id": 3,
           "size": "38",
-          "quantity": 8
+          "quantity": 9
         },
         {
           "id": 4,

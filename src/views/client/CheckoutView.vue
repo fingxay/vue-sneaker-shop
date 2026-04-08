@@ -126,17 +126,9 @@
 
         <img
           class="bank-qr-image"
-          :src="bankQrUrl"
+          :src="bankQrUrl" 
           alt="QR chuyển khoản ngân hàng"
         />
-
-        <div class="bank-transfer-info">
-          <p><strong>Ngân hàng:</strong> MB Bank</p>
-          <p><strong>Chủ tài khoản:</strong> NGUYEN HONG TAI</p>
-          <p><strong>Số tài khoản:</strong> 09726519527</p>
-          <p><strong>Số tiền:</strong> {{ formatPrice(totalAmount) }}</p>
-          <p><strong>Nội dung:</strong> {{ bankTransferCode }}</p>
-        </div>
 
         <p class="bank-qr-note" v-if="!isProcessingBankTransfer">
           Vui lòng giữ nguyên màn hình để hệ thống xác nhận thanh toán.
@@ -259,8 +251,13 @@ const totalAmount = computed(() => {
 })
 
 const bankQrUrl = computed(() => {
-  const qrContent = `BANKING|MB Bank|09726519527|NGUYEN HONG TAI|${totalAmount.value}|${bankTransferCode.value || 'THANHTOAN'}`
-  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrContent)}`
+  const bankBin = '970407'
+  const accountNo = '19071215819014'
+  const accountName = 'NGUYEN HONG TAI'
+  const amount = totalAmount.value
+  const addInfo = bankTransferCode.value || 'THANHTOAN'
+
+  return `https://img.vietqr.io/image/${bankBin}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(addInfo)}&accountName=${encodeURIComponent(accountName)}`
 })
 
 const formatPrice = (price) => {
@@ -430,7 +427,7 @@ const handlePlaceOrder = async () => {
 
     bankTransferTimeout.value = setTimeout(() => {
       handleFakeBankTransfer()
-    }, 4000)
+    }, 400000)
 
     return
   }
@@ -718,15 +715,6 @@ const handlePlaceOrder = async () => {
   background: rgba(0, 0, 0, 0.55);
 }
 
-.bank-qr-modal {
-  width: 100%;
-  max-width: 460px;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
-}
-
 .bank-qr-title {
   margin: 0;
   font-size: 24px;
@@ -795,11 +783,20 @@ const handlePlaceOrder = async () => {
   cursor: not-allowed;
 }
 
+.bank-qr-modal {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
 .bank-qr-image {
   display: block;
-  width: 220px;
-  height: 220px;
-  margin: 20px auto 0;
+  width: 320px;
+  height: 320px;
+  margin: 24px auto 8px;
   border-radius: 16px;
   background: #f9fafb;
 }
